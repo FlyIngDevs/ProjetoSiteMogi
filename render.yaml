@@ -8,7 +8,7 @@ services:
     name: shoppinghub
     env: python
     rootDir: backend
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install -r requirements.txt && python -c "from app.database.database import Base, engine; Base.metadata.create_all(bind=engine); print('Database tables created successfully')"
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     autoDeploy: true
     healthCheckPath: /health
@@ -18,7 +18,11 @@ services:
       sizeGB: 1
     envVars:
       - key: PYTHON_VERSION
-        value: 3.12.8
+        value: 3.12
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: PYTHONDONTWRITEBYTECODE
+        value: "1"
       - key: DEBUG
         value: "false"
       - key: SECRET_KEY
@@ -29,3 +33,5 @@ services:
           property: connectionString
       - key: UPLOAD_DIR
         value: /var/data/uploads
+      - key: WEB_CONCURRENCY
+        value: "1"

@@ -11,6 +11,12 @@ ENV_FILE = BASE_DIR / ".env"
 
 class Settings(BaseSettings):
     """Application settings and configuration"""
+    
+    model_config = SettingsConfigDict(
+        env_file=str(ENV_FILE) if ENV_FILE.exists() else None,
+        env_file_encoding='utf-8',
+        case_sensitive=False
+    )
 
     # Database
     database_url: str = "sqlite:///./shopping.db"
@@ -48,11 +54,6 @@ class Settings(BaseSettings):
         "http://127.0.0.1:8080",
         "http://127.0.0.1:8000",
     ])
-
-    model_config = SettingsConfigDict(
-        env_file=ENV_FILE,
-        case_sensitive=False
-    )
 
 
 settings = Settings()

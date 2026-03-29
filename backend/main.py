@@ -16,29 +16,38 @@ UPLOADS_DIR = Path(settings.upload_dir).resolve()
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Create database tables
-Base.metadata.create_all(bind=engine)
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as e:
+    print(f"Warning: Could not create database tables: {e}")
 
 
 def ensure_annotator_gallery_columns() -> None:
-    inspector = inspect(engine)
-    if "annotators" not in inspector.get_table_names():
-        return
+    try:
+        inspector = inspect(engine)
+        if "annotators" not in inspector.get_table_names():
+            return
 
-    existing_columns = {column["name"] for column in inspector.get_columns("annotators")}
-    required_columns = [
-        "photo_1_url",
-        "photo_2_url",
-        "photo_3_url",
-        "photo_4_url",
-    ]
+        existing_columns = {column["name"] for column in inspector.get_columns("annotators")}
+        required_columns = [
+            "photo_1_url",
+            "photo_2_url",
+            "photo_3_url",
+            "photo_4_url",
+        ]
 
-    with engine.begin() as connection:
-        for column_name in required_columns:
-            if column_name not in existing_columns:
-                connection.execute(text(f"ALTER TABLE annotators ADD COLUMN {column_name} VARCHAR"))
+        with engine.begin() as connection:
+            for column_name in required_columns:
+                if column_name not in existing_columns:
+                    connection.execute(text(f"ALTER TABLE annotators ADD COLUMN {column_name} VARCHAR"))
+    except Exception as e:
+        print(f"Warning: Could not ensure annotator gallery columns: {e}")
 
 
-ensure_annotator_gallery_columns()
+try:
+    ensure_annotator_gallery_columns()
+except Exception as e:
+    print(f"Warning: Error during database setup: {e}")
 
 # Initialize FastAPI app
 app = FastAPI(
