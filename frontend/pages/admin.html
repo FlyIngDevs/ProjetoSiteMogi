@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - ShoppingHub</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="admin-body">
+    <div class="admin-shell">
+        <header class="admin-header">
+            <div>
+                <p class="admin-kicker">ShoppingHub</p>
+                <h1>Painel Administrativo</h1>
+                <p class="admin-subtitle">Gerencie empresas, vagas, banners do carousel e patrocinadores.</p>
+            </div>
+            <div class="admin-header-actions">
+                <a href="../index.html" class="admin-link">Voltar ao site</a>
+                <button id="logoutBtn" class="admin-btn ghost" style="display:none;">Sair</button>
+            </div>
+        </header>
+
+        <section id="authCard" class="admin-card auth-card">
+            <div class="auth-copy">
+                <span class="status-pill">Acesso restrito</span>
+                <h2>Entrar como administrador</h2>
+                <p>Somente contas com perfil admin podem acessar este painel.</p>
+                <div id="bootstrapHint" class="bootstrap-hint" style="display:none;">
+                    <p>Nenhum administrador foi criado ainda. Faça login com uma conta comum e promova esta conta para admin.</p>
+                    <button id="bootstrapBtn" class="admin-btn">Tornar esta conta administradora</button>
+                </div>
+            </div>
+
+            <form id="adminLoginForm" class="admin-form">
+                <label>
+                    E-mail
+                    <input type="email" id="adminEmail" required>
+                </label>
+                <label>
+                    Senha
+                    <input type="password" id="adminPassword" required>
+                </label>
+                <button type="submit" class="admin-btn">Entrar</button>
+                <p id="authMessage" class="form-message"></p>
+            </form>
+        </section>
+
+        <main id="adminApp" style="display:none;">
+            <section class="admin-card admin-overview">
+                <div>
+                    <span class="status-pill success">Administrador autenticado</span>
+                    <h2 id="adminWelcome">Bem-vindo</h2>
+                </div>
+                <p id="adminDataMessage" class="form-message"></p>
+                <div class="stats-grid" id="statsGrid"></div>
+            </section>
+
+            <section class="admin-tabs">
+                <button class="tab-btn active" data-tab="companies">Empresas</button>
+                <button class="tab-btn" data-tab="jobs">Vagas</button>
+                <button class="tab-btn" data-tab="carousel">Carousel</button>
+                <button class="tab-btn" data-tab="sponsors">Patrocinios</button>
+            </section>
+
+            <section class="tab-panel active" id="tab-companies">
+                <div class="admin-grid">
+                    <div class="admin-card">
+                        <div class="panel-header">
+                            <h3>Empresas cadastradas</h3>
+                            <button class="admin-btn secondary" onclick="resetAnnotatorForm()">Nova empresa</button>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Empresa</th>
+                                        <th>Local</th>
+                                        <th>Status</th>
+                                        <th>Acoes</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="annotatorsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="panel-header">
+                            <h3 id="annotatorFormTitle">Nova empresa</h3>
+                        </div>
+                        <form id="annotatorForm" class="admin-form two-cols">
+                            <input type="hidden" id="annotatorId">
+                            <label>Nome da empresa<input type="text" id="annotatorCompanyName" required></label>
+                            <label>Slug<input type="text" id="annotatorSlug" required></label>
+                            <label class="full">Descricao<textarea id="annotatorDescription" rows="4" required></textarea></label>
+                            <label>E-mail<input type="email" id="annotatorEmail" required></label>
+                            <label>Telefone<input type="text" id="annotatorPhone" required></label>
+                            <label>Website<input type="url" id="annotatorWebsite"></label>
+                            <label>Cidade<input type="text" id="annotatorCity" required></label>
+                            <label>Estado<input type="text" id="annotatorState" required></label>
+                            <label class="full">Endereco<input type="text" id="annotatorAddress"></label>
+                            <label class="full upload-field">Logo da empresa
+                                <input type="text" id="annotatorLogoUrl" placeholder="/uploads/annotators/logo-empresa.jpg">
+                                <input type="file" id="annotatorLogoFile" accept="image/*">
+                                <small>Selecione uma imagem para fazer upload automatico ou cole o caminho manualmente.</small>
+                            </label>
+                            <label class="full upload-field">Banner da empresa
+                                <input type="text" id="annotatorBannerUrl" placeholder="/uploads/annotators/banner-empresa.jpg">
+                                <input type="file" id="annotatorBannerFile" accept="image/*">
+                                <small>Arquivos enviados ficam salvos e prontos para uso no site.</small>
+                            </label>
+                            <label class="full"><strong>Galeria do microsite</strong></label>
+                            <label class="full upload-field">Foto 1 do microsite
+                                <input type="text" id="annotatorPhoto1Url" placeholder="/uploads/annotators/foto-1.jpg">
+                                <input type="file" id="annotatorPhoto1File" accept="image/*">
+                            </label>
+                            <label class="full upload-field">Foto 2 do microsite
+                                <input type="text" id="annotatorPhoto2Url" placeholder="/uploads/annotators/foto-2.jpg">
+                                <input type="file" id="annotatorPhoto2File" accept="image/*">
+                            </label>
+                            <label class="full upload-field">Foto 3 do microsite
+                                <input type="text" id="annotatorPhoto3Url" placeholder="/uploads/annotators/foto-3.jpg">
+                                <input type="file" id="annotatorPhoto3File" accept="image/*">
+                            </label>
+                            <label class="full upload-field">Foto 4 do microsite
+                                <input type="text" id="annotatorPhoto4Url" placeholder="/uploads/annotators/foto-4.jpg">
+                                <input type="file" id="annotatorPhoto4File" accept="image/*">
+                            </label>
+                            <label>Facebook URL<input type="url" id="annotatorFacebookUrl"></label>
+                            <label>Instagram URL<input type="url" id="annotatorInstagramUrl"></label>
+                            <label>WhatsApp<input type="text" id="annotatorWhatsapp"></label>
+                            <label>Twitter URL<input type="url" id="annotatorTwitterUrl"></label>
+                            <label>LinkedIn URL<input type="url" id="annotatorLinkedinUrl"></label>
+                            <label class="checkbox"><input type="checkbox" id="annotatorIsActive" checked> Empresa ativa</label>
+                            <label class="checkbox"><input type="checkbox" id="annotatorIsVerified"> Empresa verificada</label>
+                            <div class="form-actions full">
+                                <button type="submit" class="admin-btn">Salvar empresa</button>
+                                <button type="button" class="admin-btn ghost" onclick="resetAnnotatorForm()">Limpar</button>
+                            </div>
+                            <p id="annotatorMessage" class="form-message full"></p>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <section class="tab-panel" id="tab-jobs">
+                <div class="admin-grid">
+                    <div class="admin-card">
+                        <div class="panel-header">
+                            <h3>Vagas cadastradas</h3>
+                            <button class="admin-btn secondary" onclick="resetJobForm()">Nova vaga</button>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Vaga</th>
+                                        <th>Empresa</th>
+                                        <th>Status</th>
+                                        <th>Acoes</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="jobsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="panel-header">
+                            <h3 id="jobFormTitle">Nova vaga</h3>
+                        </div>
+                        <form id="jobAdminForm" class="admin-form two-cols">
+                            <input type="hidden" id="jobId">
+                            <label>Titulo<input type="text" id="jobTitle" required></label>
+                            <label>Categoria<input type="text" id="jobCategory" required></label>
+                            <label class="full">Descricao<textarea id="jobDescription" rows="4" required></textarea></label>
+                            <label>Tipo de contratacao<input type="text" id="jobEmploymentType" required></label>
+                            <label>Empresa ID<input type="number" id="jobCompanyId"></label>
+                            <label>Empresa<input type="text" id="jobCompanyName" required></label>
+                            <label>E-mail da empresa<input type="email" id="jobCompanyEmail" required></label>
+                            <label>Telefone da empresa<input type="text" id="jobCompanyPhone" required></label>
+                            <label>Salario minimo<input type="number" id="jobSalaryMin"></label>
+                            <label>Salario maximo<input type="number" id="jobSalaryMax"></label>
+                            <label>Cidade<input type="text" id="jobCity" required></label>
+                            <label>Estado<input type="text" id="jobState" required></label>
+                            <label class="full">Requisitos<textarea id="jobRequirements" rows="3" required></textarea></label>
+                            <label>E-mail de contato<input type="email" id="jobContactEmail" required></label>
+                            <label>Telefone de contato<input type="text" id="jobContactPhone"></label>
+                            <label class="checkbox"><input type="checkbox" id="jobIsFeatured"> Destacar vaga</label>
+                            <label class="checkbox"><input type="checkbox" id="jobIsActive" checked> Vaga ativa</label>
+                            <div class="form-actions full">
+                                <button type="submit" class="admin-btn">Salvar vaga</button>
+                                <button type="button" class="admin-btn ghost" onclick="resetJobForm()">Limpar</button>
+                            </div>
+                            <p id="jobMessage" class="form-message full"></p>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <section class="tab-panel" id="tab-carousel">
+                <div class="admin-grid">
+                    <div class="admin-card">
+                        <div class="panel-header">
+                            <h3>Itens do carousel</h3>
+                            <button class="admin-btn secondary" onclick="resetCarouselForm()">Novo item</button>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Titulo</th>
+                                        <th>Ordem</th>
+                                        <th>Status</th>
+                                        <th>Acoes</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="carouselTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="panel-header">
+                            <h3 id="carouselFormTitle">Novo item</h3>
+                        </div>
+                        <form id="carouselForm" class="admin-form two-cols">
+                            <input type="hidden" id="carouselId">
+                            <label>Titulo<input type="text" id="carouselTitle" required></label>
+                            <label>Empresa vinculada<select id="carouselAnnotatorId"></select></label>
+                            <label class="full">Descricao<textarea id="carouselDescription" rows="3"></textarea></label>
+                            <label class="full upload-field">Imagem do carousel
+                                <input type="text" id="carouselImageUrl" placeholder="/uploads/carousel/banner-carousel.jpg" required>
+                                <input type="file" id="carouselImageFile" accept="image/*">
+                                <small>Ao selecionar um arquivo, o sistema envia a imagem e preenche o campo automaticamente.</small>
+                            </label>
+                            <label>Link URL<input type="url" id="carouselLinkUrl"></label>
+                            <label>Ordem<input type="number" id="carouselOrder" value="0" required></label>
+                            <label>Velocidade (ms)<input type="number" id="carouselRotationSpeed" value="5000" required></label>
+                            <label class="checkbox"><input type="checkbox" id="carouselIsActive" checked> Item ativo</label>
+                            <div class="form-actions full">
+                                <button type="submit" class="admin-btn">Salvar item</button>
+                                <button type="button" class="admin-btn ghost" onclick="resetCarouselForm()">Limpar</button>
+                            </div>
+                            <p id="carouselMessage" class="form-message full"></p>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <section class="tab-panel" id="tab-sponsors">
+                <div class="admin-grid">
+                    <div class="admin-card">
+                        <div class="panel-header">
+                            <h3>Patrocinios</h3>
+                            <button class="admin-btn secondary" onclick="resetSponsorForm()">Novo patrocinio</button>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Empresa</th>
+                                        <th>Posicao</th>
+                                        <th>Status</th>
+                                        <th>Acoes</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sponsorsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="panel-header">
+                            <h3 id="sponsorFormTitle">Novo patrocinio</h3>
+                        </div>
+                        <form id="sponsorForm" class="admin-form two-cols">
+                            <input type="hidden" id="sponsorId">
+                            <label>Empresa<input type="text" id="sponsorCompanyName" required></label>
+                            <label>Posicao<input type="text" id="sponsorPosition" value="banner" required></label>
+                            <label class="full upload-field">Logo do patrocinador
+                                <input type="text" id="sponsorLogoUrl" placeholder="/uploads/sponsors/logo-patrocinador.jpg" required>
+                                <input type="file" id="sponsorLogoFile" accept="image/*">
+                                <small>Use upload para salvar a imagem com permissao publica automaticamente.</small>
+                            </label>
+                            <label class="full upload-field">Banner do patrocinador
+                                <input type="text" id="sponsorBannerUrl" placeholder="/uploads/sponsors/banner-patrocinador.jpg">
+                                <input type="file" id="sponsorBannerFile" accept="image/*">
+                                <small>Opcional para cards patrocinados com banner.</small>
+                            </label>
+                            <label>Website URL<input type="url" id="sponsorWebsiteUrl"></label>
+                            <label>Ordem<input type="number" id="sponsorOrder" value="0" required></label>
+                            <label>Inicio<input type="datetime-local" id="sponsorStartDate" required></label>
+                            <label>Fim<input type="datetime-local" id="sponsorEndDate"></label>
+                            <label class="full">Descricao<textarea id="sponsorDescription" rows="3"></textarea></label>
+                            <label class="checkbox"><input type="checkbox" id="sponsorIsActive" checked> Patrocinio ativo</label>
+                            <div class="form-actions full">
+                                <button type="submit" class="admin-btn">Salvar patrocinio</button>
+                                <button type="button" class="admin-btn ghost" onclick="resetSponsorForm()">Limpar</button>
+                            </div>
+                            <p id="sponsorMessage" class="form-message full"></p>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/admin.js"></script>
+</body>
+</html>

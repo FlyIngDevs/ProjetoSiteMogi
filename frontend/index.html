@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Online - Plataforma Dinâmica</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <i class="fas fa-shopping-bag"></i>
+                <span>ShoppingHub</span>
+            </div>
+            
+            <div class="navbar-center">
+                <form class="search-form" id="searchForm">
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        placeholder="Buscar empresas ou produtos..." 
+                        class="search-input"
+                    >
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+            
+            <div class="navbar-right">
+                <a href="#" class="nav-link">Anunciantes</a>
+                <a href="#empregos" class="nav-link">Empregos</a>
+                <button id="loginBtn" class="btn-login">
+                    <i class="fas fa-user"></i> Conectar
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Banner with Carousel -->
+    <section class="hero-section">
+        <div class="carousel-container">
+            <div class="carousel" id="mainCarousel">
+                <div class="carousel-item active">
+                    <img src="img/placeholder-1.jpg" alt="Carousel 1">
+                    <div class="carousel-caption">
+                        <h2>Bem-vindo ao ShoppingHub</h2>
+                        <p>Sua plataforma de compras online mais moderna</p>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="carousel-btn prev" onclick="prevSlide()">&#10094;</button>
+            <button class="carousel-btn next" onclick="nextSlide()">&#10095;</button>
+            
+            <div class="carousel-dots" id="carouselDots"></div>
+        </div>
+    </section>
+
+    <!-- Sponsorship Banner -->
+    <section class="sponsorship-section">
+        <div class="sponsors-carousel-shell">
+            <div class="sponsors-container sponsors-carousel" id="sponsorsContainer">
+                <!-- Sponsorships loaded dynamically -->
+            </div>
+            <div class="sponsors-dots" id="sponsorsDots"></div>
+        </div>
+    </section>
+
+    <!-- Featured Companies Section -->
+    <section class="featured-section">
+        <div class="container">
+            <h2 class="section-title">Empresas em Destaque</h2>
+            <div class="companies-slider-shell">
+                <div class="companies-grid" id="companiesGrid">
+                    <!-- Companies loaded dynamically -->
+                </div>
+                <div class="companies-dots" id="companiesDots"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Results Section -->
+    <section id="searchResults" class="search-results-section" style="display: none;">
+        <div class="container">
+            <h2 class="section-title">Resultados da Busca</h2>
+            <div class="search-results" id="searchResultsContainer">
+                <!-- Search results loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Jobs Section -->
+    <section id="empregos" class="jobs-section">
+        <div class="container">
+            <h2 class="section-title">Oportunidades de Emprego</h2>
+            
+            <div class="jobs-filters">
+                <input 
+                    type="text" 
+                    id="jobSearch" 
+                    placeholder="Buscar vagas..."
+                    class="filter-input"
+                >
+                <select id="categoryFilter" class="filter-select">
+                    <option value="">Todas as categorias</option>
+                    <option value="sales">Vendas</option>
+                    <option value="it">TI</option>
+                    <option value="marketing">Marketing</option>
+                    <option value="hr">RH</option>
+                    <option value="admin">Administrativo</option>
+                </select>
+                <select id="cityFilter" class="filter-select">
+                    <option value="">Todas as cidades</option>
+                    <option value="São Paulo">São Paulo</option>
+                    <option value="Rio de Janeiro">Rio de Janeiro</option>
+                    <option value="Belo Horizonte">Belo Horizonte</option>
+                </select>
+                <button id="postJobBtn" class="btn-primary">+ Postar Vaga</button>
+            </div>
+            
+            <div class="jobs-grid" id="jobsGrid">                
+                <!-- Jobs loaded dynamically -->
+            </div>
+            <div class="jobs-pagination" id="jobsPagination" style="display:none;">
+                <button type="button" id="jobsPrevBtn" class="pagination-btn">Anterior</button>
+                <div id="jobsPageNumbers" class="pagination-numbers"></div>
+                <span id="jobsPageInfo" class="pagination-info"></span>
+                <button type="button" id="jobsNextBtn" class="pagination-btn">Proxima</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Post Job Modal -->
+    <div id="postJobModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Postar Nova Vaga</h2>
+            <form id="jobForm">
+                <!-- Job Title -->
+                <input 
+                    type="text" 
+                    id="jobTitle" 
+                    name="title" 
+                    placeholder="Título da vaga" 
+                    required
+                >
+                
+                <!-- Job Description -->
+                <textarea 
+                    id="jobDescription" 
+                    name="description" 
+                    placeholder="Descrição da vaga" 
+                    rows="4" 
+                    required
+                ></textarea>
+                
+                <!-- Category -->
+                <select id="jobCategory" name="category" required>
+                    <option value="">Selecione a categoria</option>
+                    <option value="sales">Vendas</option>
+                    <option value="it">TI</option>
+                    <option value="marketing">Marketing</option>
+                    <option value="hr">RH</option>
+                    <option value="admin">Administrativo</option>
+                </select>
+                
+                <!-- Employment Type -->
+                <select id="jobEmploymentType" name="employment_type" required>
+                    <option value="">Tipo de contratação</option>
+                    <option value="full-time">Tempo Integral</option>
+                    <option value="part-time">Meio Período</option>
+                    <option value="contract">Contrato</option>
+                    <option value="freelance">Freelance</option>
+                </select>
+                
+                <!-- Salary Range -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <input 
+                        type="number" 
+                        id="jobSalaryMin" 
+                        name="salary_min" 
+                        placeholder="Salário mínimo" 
+                        min="0"
+                    >
+                    <input 
+                        type="number" 
+                        id="jobSalaryMax" 
+                        name="salary_max" 
+                        placeholder="Salário máximo" 
+                        min="0"
+                    >
+                </div>
+                
+                <!-- City and State -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <input 
+                        type="text" 
+                        id="jobCity" 
+                        name="city" 
+                        placeholder="Cidade" 
+                        required
+                    >
+                    <select id="jobState" name="state" required>
+                        <option value="">Estado</option>
+                        <option value="SP">São Paulo</option>
+                        <option value="RJ">Rio de Janeiro</option>
+                        <option value="MG">Minas Gerais</option>
+                        <option value="BA">Bahia</option>
+                        <option value="RS">Rio Grande do Sul</option>
+                        <option value="PR">Paraná</option>
+                        <option value="DF">Distrito Federal</option>
+                    </select>
+                </div>
+                
+                <!-- Company Information -->
+                <input 
+                    type="text" 
+                    id="jobCompanyName" 
+                    name="company_name" 
+                    placeholder="Nome da empresa" 
+                    required
+                >
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <input 
+                        type="email" 
+                        id="jobCompanyEmail" 
+                        name="company_email" 
+                        placeholder="E-mail da empresa" 
+                        required
+                    >
+                    <input 
+                        type="tel" 
+                        id="jobCompanyPhone" 
+                        name="company_phone" 
+                        placeholder="Telefone da empresa" 
+                        required
+                    >
+                </div>
+                
+                <!-- Requirements -->
+                <textarea 
+                    id="jobRequirements" 
+                    name="requirements" 
+                    placeholder="Requisitos e qualificações" 
+                    rows="3" 
+                    required
+                ></textarea>
+                
+                <!-- Contact Information -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <input 
+                        type="email" 
+                        id="jobContactEmail" 
+                        name="contact_email" 
+                        placeholder="E-mail de contato" 
+                        required
+                    >
+                    <input 
+                        type="tel" 
+                        id="jobContactPhone" 
+                        name="contact_phone" 
+                        placeholder="Telefone de contato"
+                    >
+                </div>
+                
+                <button type="submit" class="btn-primary">Postar Vaga</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeLoginModal()">&times;</span>
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <button type="button" id="loginTabBtn" class="tab-btn active" onclick="switchAuthTab('login')">Conectar</button>
+                <button type="button" id="registerTabBtn" class="tab-btn" onclick="switchAuthTab('register')">Cadastrar</button>
+            </div>
+            
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form">
+                <input type="email" id="loginEmail" placeholder="E-mail" required>
+                <input type="password" id="loginPassword" placeholder="Senha" required>
+                <button type="submit" class="btn-primary">Conectar</button>
+            </form>
+            
+            <!-- Register Form -->
+            <form id="registerForm" class="auth-form" style="display: none;">
+                <input type="text" id="registerName" placeholder="Nome completo" required>
+                <input type="email" id="registerEmail" placeholder="E-mail" required>
+                <input type="password" id="registerPassword" placeholder="Senha (mín. 6 caracteres)" required minlength="6">
+                <input type="password" id="registerPassword2" placeholder="Confirmar senha" required minlength="6">
+                <button type="submit" class="btn-primary">Cadastrar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Apply Job Modal -->
+    <div id="applyJobModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeApplyModal()">&times;</span>
+            <h2>Candidatar-se a vaga</h2>
+            <p id="applyJobTitle" style="margin-bottom: 1rem; color: var(--text-light);"></p>
+            <form id="applyJobForm" enctype="multipart/form-data">
+                <input type="hidden" id="applyJobId" name="job_id">
+                <input type="text" id="applicantName" name="applicant_name" placeholder="Seu nome completo" required>
+                <input type="email" id="applicantEmail" name="applicant_email" placeholder="Seu e-mail" required>
+                <input type="tel" id="applicantPhone" name="applicant_phone" placeholder="Seu telefone">
+                <textarea id="applicationMessage" name="message" placeholder="Mensagem para a empresa" rows="4"></textarea>
+                <label style="display:flex; flex-direction:column; gap:0.5rem; color:var(--text-light);">
+                    Curriculo
+                    <input type="file" id="applicantResume" name="resume" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required>
+                    <small>Formatos aceitos: PDF, DOC ou DOCX. Tamanho maximo de 5 MB.</small>
+                </label>
+                <button type="submit" class="btn-primary">Enviar candidatura</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>About Us</h3>
+                    <p>ShoppingHub é a plataforma líder de compras online com micro sites de empresas.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Links Rápidos</h3>
+                    <ul>
+                        <li><a href="#">Sobre</a></li>
+                        <li><a href="#">Contato</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Redes Sociais</h3>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 ShoppingHub. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

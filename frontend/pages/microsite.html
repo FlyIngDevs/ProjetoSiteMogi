@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Micro Site - ShoppingHub</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/microsite.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <a href="../index.html"><i class="fas fa-arrow-left"></i> Voltar</a>
+            </div>
+            <div class="navbar-brand">
+                <i class="fas fa-store"></i>
+                <span id="companyNameNav">Carregando...</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Company Info Section -->
+    <section class="company-info-section">
+        <div class="container">
+            <div class="company-info-grid">
+                <div class="company-info-main">
+                    <div class="company-header-info">
+                        <img id="companyLogo" src="../img/logo-placeholder.jpg" alt="Logo" class="company-logo-large">
+                        <div class="company-details">
+                            <h1 id="companyName">Carregando...</h1>
+                            <p id="companyLocation" class="company-loc">
+                                <i class="fas fa-map-marker-alt"></i> Localização
+                            </p>
+                            <p id="companyDesc" class="company-desc">Descrição</p>
+                        </div>
+                    </div>
+
+                    <!-- Photo Gallery -->
+                    <div class="gallery-section">
+                        <h2>Galeria de Fotos</h2>
+                        <div class="gallery" id="galleryContainer"></div>
+                    </div>
+
+                    <!-- About Section -->
+                    <div class="about-section">
+                        <h2>Sobre a Empresa</h2>
+                        <p id="aboutText">Carregando informações da empresa...</p>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <aside class="company-sidebar">
+                    <!-- Contact Card -->
+                    <div class="info-card">
+                        <h3><i class="fas fa-phone"></i> Contato</h3>
+                        <p><strong>Telefone:</strong> <span id="phone">-</span></p>
+                        <p><strong>Email:</strong> <span id="email">-</span></p>
+                        <p><strong>Website:</strong> <a id="website" href="#" target="_blank">Visitar</a></p>
+                    </div>
+
+                    <!-- Social Media Card -->
+                    <div class="info-card">
+                        <h3><i class="fas fa-share-alt"></i> Redes Sociais</h3>
+                        <div class="social-links-large">
+                            <a id="socialFacebook" href="#" target="_blank" class="social-btn facebook">
+                                <i class="fab fa-facebook"></i> Facebook
+                            </a>
+                            <a id="socialInstagram" href="#" target="_blank" class="social-btn instagram">
+                                <i class="fab fa-instagram"></i> Instagram
+                            </a>
+                            <a id="socialWhatsapp" href="#" target="_blank" class="social-btn whatsapp">
+                                <i class="fab fa-whatsapp"></i> WhatsApp
+                            </a>
+                            <a id="socialTwitter" href="#" target="_blank" class="social-btn twitter">
+                                <i class="fab fa-twitter"></i> Twitter
+                            </a>
+                            <a id="socialLinkedin" href="#" target="_blank" class="social-btn linkedin">
+                                <i class="fab fa-linkedin"></i> LinkedIn
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- CTA Card -->
+                    <div class="info-card cta-card">
+                        <h3>Conecte-se</h3>
+                        <button class="btn-contact">
+                            <i class="fas fa-envelope"></i> Enviar Mensagem
+                        </button>
+                        <button class="btn-contact secondary">
+                            <i class="fas fa-phone"></i> Ligar
+                        </button>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>Sobre ShoppingHub</h3>
+                    <p>A plataforma líder de shopping online com micro sites de empresas.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Links Rápidos</h3>
+                    <ul>
+                        <li><a href="../index.html">Voltar para Home</a></li>
+                        <li><a href="../index.html#empregos">Empregos</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 ShoppingHub. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/microsite.js"></script>
+</body>
+</html>
