@@ -1,5 +1,7 @@
-# Render deployment configuration
-# Updated: 2026-03-29 - Added detailed debugging to diagnose ASGI import issues
+# Render deployment configuration for Shopping Platform
+# This is an alternative configuration that avoids shell script issues
+# Use this if the main render.yaml fails
+
 databases:
   - name: shoppinghub-db
     databaseName: shoppinghub
@@ -10,7 +12,25 @@ services:
     name: shoppinghub
     env: python
     rootDir: backend
-    buildCommand: pip install -r requirements.txt
+    buildCommand: >
+      pip install -r requirements.txt &&
+      python -c "
+import sys;
+sys.path.insert(0, '.');
+print('Checking project structure...');
+from pathlib import Path;
+assert Path('main.py').exists(), 'main.py not found';
+assert Path('app').exists(), 'app folder not found';
+print('✓ Structure OK');
+print('Importing application...');
+from main import app;
+print('✓ Application imported');
+print('Creating database tables...');
+from app.database.database import Base, engine;
+Base.metadata.create_all(bind=engine);
+print('✓ Database tables created');
+print('Build completed successfully!')
+      "
     startCommand: python run.py
     autoDeploy: true
     healthCheckPath: /health
