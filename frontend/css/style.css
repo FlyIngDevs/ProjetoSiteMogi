@@ -707,12 +707,19 @@ body {
     font-size: 0.95rem;
     margin-bottom: 1rem;
     line-height: 1.5;
+    white-space: pre-line;
 }
 
 .job-salary {
     font-weight: bold;
     color: var(--secondary-color);
     margin-bottom: 1rem;
+}
+
+.job-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 .job-btn {
@@ -730,6 +737,18 @@ body {
 .job-btn:hover {
     background: var(--primary-color);
     color: var(--white);
+}
+
+.job-btn-secondary {
+    background: transparent;
+    color: var(--text-dark);
+    border-color: var(--border-color);
+}
+
+.job-btn-secondary:hover {
+    background: var(--light-bg);
+    color: var(--text-dark);
+    border-color: var(--secondary-color);
 }
 
 /* ==================== MODAL ==================== */

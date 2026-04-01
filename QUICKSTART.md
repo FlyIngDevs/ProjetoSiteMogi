@@ -54,6 +54,7 @@ Frontend: `http://localhost:8080`
 
 - o botao `Candidatar-se` envia nome, contato, mensagem e curriculo para o e-mail da vaga
 - configure SMTP em `backend/.env` usando o arquivo `backend/.env.example`
+- para Gmail em producao, use `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=587`, `SMTP_USERNAME=contatoflyingmm@gmail.com`, `SMTP_FROM_EMAIL=contatoflyingmm@gmail.com` e uma senha de app em `SMTP_PASSWORD`
 - formatos aceitos para curriculo: `PDF`, `DOC` e `DOCX`
 
 ## Testes rapidos
@@ -100,3 +101,4 @@ taskkill /PID <PID> /F
   - `SMTP_USERNAME`
   - `SMTP_PASSWORD`
   - `SMTP_FROM_EMAIL`
+  - para Gmail, gere uma senha de app e use `SMTP_USE_TLS=true`
