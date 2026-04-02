@@ -680,6 +680,7 @@ body {
     align-self: start;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 .job-card:hover {
@@ -721,17 +722,13 @@ body {
     margin-bottom: 1rem;
     line-height: 1.5;
     white-space: pre-line;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
     overflow: hidden;
     min-height: calc(1.5em * 3);
+    max-height: calc(1.5em * 3);
 }
 
 .job-card.expanded .job-description {
-    display: block;
-    -webkit-line-clamp: unset;
-    overflow: visible;
+    max-height: 500px;
 }
 
 .job-salary {
