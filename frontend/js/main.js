@@ -411,7 +411,6 @@ function buildPageNumbers(totalPages) {
 function createJobCard(job) {
     const card = document.createElement('div');
     const description = job.description || 'Confira os detalhes completos desta oportunidade.';
-    const hasLongDescription = description.length > 100;
     const salaryRange = job.salary_min && job.salary_max
         ? `${formatCurrency(job.salary_min)} - ${formatCurrency(job.salary_max)}`
         : 'Salario a discutir';
@@ -427,7 +426,7 @@ function createJobCard(job) {
         <div class="job-description" id="jobDescription-${job.id}">${truncateText(description, 100)}</div>
         <div class="job-salary">${salaryRange}</div>
         <div class="job-actions">
-            ${hasLongDescription ? `<button type="button" class="job-btn job-btn-secondary" id="jobToggle-${job.id}" onclick="toggleJobDescription(${job.id})" aria-expanded="false">Mais informacoes</button>` : ''}
+            <button type="button" class="job-btn job-btn-secondary" id="jobToggle-${job.id}" onclick="toggleJobDescription(${job.id})" aria-expanded="false">Mais informacoes</button>
             <button type="button" class="job-btn" onclick="contactJob(${job.id})">Candidatar-se</button>
         </div>
     `;
@@ -438,19 +437,20 @@ function createJobCard(job) {
 function toggleJobDescription(jobId) {
     const descriptionElement = document.getElementById(`jobDescription-${jobId}`);
     const toggleButton = document.getElementById(`jobToggle-${jobId}`);
+    const cardElement = toggleButton?.closest('.job-card');
     const job = allJobs.find(currentJob => currentJob.id === jobId);
 
-    if (!descriptionElement || !toggleButton || !job) return;
+    if (!descriptionElement || !toggleButton || !cardElement || !job) return;
 
     const fullDescription = job.description || 'Confira os detalhes completos desta oportunidade.';
-    const isExpanded = descriptionElement.classList.toggle('expanded');
+    const isExpanded = cardElement.classList.toggle('expanded');
+
+    toggleButton.textContent = isExpanded ? 'Menos informacoes' : 'Mais informacoes';
+    toggleButton.setAttribute('aria-expanded', String(isExpanded));
 
     descriptionElement.textContent = isExpanded
         ? fullDescription
         : truncateText(fullDescription, 100);
-
-    toggleButton.textContent = isExpanded ? 'Menos informacoes' : 'Mais informacoes';
-    toggleButton.setAttribute('aria-expanded', String(isExpanded));
 }
 
 function contactJob(jobId) {

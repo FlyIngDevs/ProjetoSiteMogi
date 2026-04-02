@@ -53,6 +53,22 @@ print('Build completed successfully!')
         fromDatabase:
           name: shoppinghub-db
           property: connectionString
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: '587'
+      - key: SMTP_USERNAME
+        value: contatoflyingmm@gmail.com
+      - key: SMTP_FROM_EMAIL
+        value: contatoflyingmm@gmail.com
+      - key: SMTP_FROM_NAME
+        value: Flying MM
+      - key: SMTP_USE_TLS
+        value: 'true'
+      - key: SMTP_USE_SSL
+        value: 'false'
+      - key: SMTP_PASSWORD
+        sync: false
       - key: UPLOAD_DIR
         value: /var/data/uploads
       - key: WEB_CONCURRENCY
