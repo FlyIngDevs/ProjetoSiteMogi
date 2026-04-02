@@ -35,12 +35,12 @@ class Settings(BaseSettings):
     upload_dir: str = str(BASE_DIR / "uploads")
 
     # Email / job applications
-    smtp_host: str = "smtp.gmail.com"
+    smtp_host: str = ""
     smtp_port: int = 587
-    smtp_username: str = "contatoflyingmm@gmail.com"
+    smtp_username: str = ""
     smtp_password: str = ""
-    smtp_from_email: str = "contatoflyingmm@gmail.com"
-    smtp_from_name: str = "Flying MM"
+    smtp_from_email: str = ""
+    smtp_from_name: str = "ShoppingHub"
     smtp_use_tls: bool = True
     smtp_use_ssl: bool = False
     job_application_max_resume_size_mb: int = 5
