@@ -273,26 +273,6 @@ curl -X POST http://localhost:8000/api/annotators/ \
 curl "http://localhost:8000/api/annotators/?search=tech&limit=10"
 ```
 
-### Criar Vaga
-```bash
-curl -X POST http://localhost:8000/api/jobs/ \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Dev Senior",
-    "description": "5+ anos",
-    "category": "it",
-    "employment_type": "full-time",
-    "salary_min": 8000,
-    "salary_max": 12000,
-    "city": "São Paulo",
-    "state": "SP",
-    "company_name": "Tech Store",
-    "company_email": "rh@tech.com",
-    "company_phone": "11999999999",
-    "requirements": "Python, FastAPI",
-    "contact_email": "rh@tech.com"
-  }'
-```
 
 ---
 
