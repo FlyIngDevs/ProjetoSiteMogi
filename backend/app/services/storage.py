@@ -29,16 +29,47 @@ def is_storage_configured() -> bool:
 
 
 def _build_public_url(object_key: str) -> str:
-    public_base = settings.storage_public_base_url.strip().rstrip("/")
-    if public_base:
-        return f"{public_base}/{object_key}"
+    """
+    Build a signed URL for the S3 object (valid for 1 hour).
+    This allows access even if bucket is private, using temporary credentials.
+    """
+    if not is_storage_configured():
+        raise StorageConfigurationError("Storage bucket is not configured.")
+    
+    config = Config(
+        connect_timeout=30,
+        read_timeout=30,
+        retries={"max_attempts": 3, "mode": "adaptive"},
+    )
 
-    endpoint = settings.storage_endpoint_url.strip().rstrip("/")
-    bucket = settings.storage_bucket_name.strip()
-    if not endpoint or not bucket:
-        raise StorageConfigurationError("Storage public URL is not configured.")
+    client = boto3.client(
+        "s3",
+        endpoint_url=settings.storage_endpoint_url,
+        aws_access_key_id=settings.storage_access_key_id,
+        aws_secret_access_key=settings.storage_secret_access_key,
+        region_name=settings.storage_region or None,
+        config=config,
+    )
 
-    return f"{endpoint}/{bucket}/{object_key}"
+    try:
+        # Generate a signed URL valid for 1 hour (3600 seconds)
+        signed_url = client.generate_presigned_url(
+            'get_object',
+            Params={
+                'Bucket': settings.storage_bucket_name,
+                'Key': object_key
+            },
+            ExpiresIn=3600,  # 1 hour
+        )
+        logger.info("Generated signed URL for: %s", object_key)
+        return signed_url
+    except (BotoCoreError, ClientError) as exc:
+        logger.error("Failed to generate signed URL: %s - %s", object_key, str(exc))
+        # Fallback to public URL if signing fails
+        public_base = settings.storage_public_base_url.strip().rstrip("/")
+        if public_base:
+            return f"{public_base}/{object_key}"
+        raise StorageConfigurationError("Could not generate URL and public_base_url is not configured.") from exc
 
 
 def upload_bytes(
