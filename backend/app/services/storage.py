@@ -1,10 +1,16 @@
 from pathlib import Path
 from uuid import uuid4
+import logging
+import time
 
 import boto3
+from botocore.config import Config
 from botocore.exceptions import BotoCoreError, ClientError
 
 from app.core.config import settings
+
+
+logger = logging.getLogger(__name__)
 
 
 class StorageConfigurationError(RuntimeError):
@@ -48,12 +54,20 @@ def upload_bytes(
     filename = f"{uuid4().hex}{extension}"
     object_key = f"{folder}/{filename}"
 
+    # Configure boto3 with timeout and retries to avoid hanging requests.
+    config = Config(
+        connect_timeout=30,
+        read_timeout=30,
+        retries={"max_attempts": 3, "mode": "adaptive"},
+    )
+
     client = boto3.client(
         "s3",
         endpoint_url=settings.storage_endpoint_url,
         aws_access_key_id=settings.storage_access_key_id,
         aws_secret_access_key=settings.storage_secret_access_key,
         region_name=settings.storage_region or None,
+        config=config,
     )
 
     extra_args = {}
@@ -62,6 +76,9 @@ def upload_bytes(
     else:
         extra_args["ContentType"] = "application/octet-stream"
 
+    logger.info("Starting upload: %s (%s bytes)", object_key, len(contents))
+    start_time = time.time()
+
     try:
         client.put_object(
             Bucket=settings.storage_bucket_name,
@@ -69,7 +86,10 @@ def upload_bytes(
             Body=contents,
             **extra_args,
         )
+        elapsed = time.time() - start_time
+        logger.info("Upload successful: %s (%.2fs)", object_key, elapsed)
     except (BotoCoreError, ClientError) as exc:
+        logger.error("Upload failed: %s - %s", object_key, str(exc))
         raise RuntimeError("Could not upload file to storage bucket.") from exc
 
     return {
