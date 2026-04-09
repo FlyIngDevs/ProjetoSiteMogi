@@ -7,6 +7,18 @@ from app.core.config import settings
 
 def normalize_database_url(database_url: str) -> str:
     """Normalize Render/Postgres URLs for SQLAlchemy."""
+    database_url = (database_url or "").strip()
+
+    if not database_url:
+        raise RuntimeError(
+            "DATABASE_URL is not set. Configure a valid PostgreSQL connection string in the deployment environment."
+        )
+
+    if "${{" in database_url or "Postgres.DATABASE_URL" in database_url:
+        raise RuntimeError(
+            "DATABASE_URL appears to be an unresolved placeholder. Replace it with a real environment reference/value in the deployment platform."
+        )
+
     if database_url.startswith("postgres://"):
         return database_url.replace("postgres://", "postgresql+psycopg://", 1)
 
@@ -16,6 +28,14 @@ def normalize_database_url(database_url: str) -> str:
         and "+psycopg2" not in database_url
     ):
         return database_url.replace("postgresql://", "postgresql+psycopg://", 1)
+
+    if database_url.startswith("sqlite:///"):
+        return database_url
+
+    if "://" not in database_url:
+        raise RuntimeError(
+            "DATABASE_URL is invalid. Expected a full SQLAlchemy/PostgreSQL URL such as postgresql://user:pass@host:5432/dbname."
+        )
 
     return database_url
 
