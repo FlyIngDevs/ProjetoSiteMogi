@@ -1,8 +1,42 @@
+import os
+from urllib.parse import quote_plus
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.declarative import declarative_base
 
 from app.core.config import settings
+
+
+def resolve_database_url() -> str:
+    """Resolve DATABASE_URL from direct config or common platform env vars."""
+    direct_url = (settings.database_url or "").strip()
+    if direct_url:
+        return direct_url
+
+    for env_name in (
+        "DATABASE_PRIVATE_URL",
+        "DATABASE_PUBLIC_URL",
+        "POSTGRES_URL",
+        "POSTGRESQL_URL",
+    ):
+        candidate = os.getenv(env_name, "").strip()
+        if candidate:
+            return candidate
+
+    host = os.getenv("PGHOST", "").strip()
+    user = os.getenv("PGUSER", "").strip()
+    password = os.getenv("PGPASSWORD", "").strip()
+    database = os.getenv("PGDATABASE", "").strip()
+    port = os.getenv("PGPORT", "").strip() or "5432"
+
+    if host and user and database:
+        auth = quote_plus(user)
+        if password:
+            auth = f"{auth}:{quote_plus(password)}"
+        return f"postgresql://{auth}@{host}:{port}/{database}"
+
+    return ""
 
 
 def normalize_database_url(database_url: str) -> str:
@@ -40,7 +74,7 @@ def normalize_database_url(database_url: str) -> str:
     return database_url
 
 
-DATABASE_URL = normalize_database_url(settings.database_url)
+DATABASE_URL = normalize_database_url(resolve_database_url())
 
 # Create database engine
 engine = create_engine(
