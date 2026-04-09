@@ -2,6 +2,25 @@
 const API_BASE = window.SHOPPINGHUB_CONFIG?.API_BASE || 'http://127.0.0.1:8000/api';
 const ASSETS = window.SHOPPINGHUB_CONFIG?.ASSETS || {};
 
+// ==================== BRANDING ====================
+async function loadBranding() {
+    try {
+        const response = await fetch(`${API_BASE}/site-config/branding`);
+        const branding = await response.json();
+        
+        if (branding.brand_logo_url) {
+            const logoElement = document.getElementById('brandLogo');
+            if (logoElement) {
+                logoElement.src = branding.brand_logo_url;
+                logoElement.alt = 'Logotipo do site';
+            }
+        }
+    } catch (error) {
+        console.warn('Error loading branding:', error);
+        // Fallback to default logo already set in HTML
+    }
+}
+
 // ==================== CAROUSEL ====================
 let currentSlide = 0;
 let slides = [];
@@ -897,6 +916,7 @@ function logout() {
 
 // ==================== INITIALIZE ====================
 document.addEventListener('DOMContentLoaded', () => {
+    loadBranding();
     initCarousel();
     loadCompanies();
     loadJobs();

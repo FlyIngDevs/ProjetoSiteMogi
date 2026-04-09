@@ -239,7 +239,7 @@ async function loadAdminData() {
         fetchJson(`${API_BASE}/admin/jobs`, { headers: authHeaders(false) }),
         fetchJson(`${API_BASE}/admin/carousel`, { headers: authHeaders(false) }),
         fetchJson(`${API_BASE}/admin/sponsorships`, { headers: authHeaders(false) }),
-        fetchJson(`${API_BASE}/admin/branding`, { headers: authHeaders(false) })
+        fetchJson(`${API_BASE}/site-config/branding`, { headers: authHeaders(false) })
     ]);
 
     const [dashboardResult, annotatorsResult, jobsResult, carouselResult, sponsorsResult, brandingResult] = results;
@@ -667,7 +667,7 @@ async function saveBranding(event) {
     };
 
     try {
-        state.branding = await fetchJson(`${API_BASE}/admin/branding`, {
+        state.branding = await fetchJson(`${API_BASE}/site-config/branding`, {
             method: 'PUT',
             headers: authHeaders(),
             body: JSON.stringify(payload)
