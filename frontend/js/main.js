@@ -6,18 +6,30 @@ const ASSETS = window.SHOPPINGHUB_CONFIG?.ASSETS || {};
 async function loadBranding() {
     try {
         const response = await fetch(`${API_BASE}/site-config/branding`);
-        const branding = await response.json();
+        if (!response.ok) {
+            console.info('Branding endpoint returned', response.status, '- using default logo');
+            return;
+        }
         
-        if (branding.brand_logo_url) {
+        const branding = await response.json();
+        console.log('Branding loaded:', branding);
+        
+        if (branding && branding.brand_logo_url) {
             const logoElement = document.getElementById('brandLogo');
             if (logoElement) {
+                console.log('Updating logo to:', branding.brand_logo_url);
                 logoElement.src = branding.brand_logo_url;
                 logoElement.alt = 'Logotipo do site';
+                logoElement.onerror = () => {
+                    console.warn('Failed to load logo image:', branding.brand_logo_url);
+                    logoElement.src = 'img/bomcontato-logo.png';
+                };
             }
+        } else {
+            console.info('No brand logo URL provided, using default');
         }
     } catch (error) {
         console.warn('Error loading branding:', error);
-        // Fallback to default logo already set in HTML
     }
 }
 

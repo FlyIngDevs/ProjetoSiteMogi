@@ -258,8 +258,14 @@ body.admin-body {
 
 .admin-grid {
     display: grid;
-    grid-template-columns: 1.1fr .9fr;
+    grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
+}
+
+@media (max-width: 1200px) {
+    .admin-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .stats-grid {

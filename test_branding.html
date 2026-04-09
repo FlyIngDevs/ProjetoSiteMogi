@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Branding - Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2rem;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border-left: 4px solid #0d6e5d;
+        }
+        .test-result {
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background: #0d6e5d;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        button:hover {
+            background: #0a5447;
+        }
+        .preview {
+            margin-top: 1rem;
+        }
+        .preview img {
+            max-width: 200px;
+            max-height: 100px;
+            object-fit: contain;
+            border: 1px solid #ddd;
+            padding: 0.5rem;
+        }
+        h1 { color: #1f1a16; }
+        h2 { color: #0d6e5d; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Teste de Carregamento do Logo (Branding)</h1>
+    
+    <div class="test-section">
+        <h2>1. Teste da API de Branding</h2>
+        <button onclick="testBrandingAPI()">Testar API</button>
+        <div id="api-result" class="test-result" style="display:none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Teste de Carregamento de Nova Imagem</h2>
+        <p>Abra o console (F12) e execute:</p>
+        <code>fetch('undefined/api/site-config/branding').then(r => r.json()).then(d => console.log(d))</code>
+        <button onclick="testNewImageUrl()">Simular URL de Imagem</button>
+        <div id="image-result" class="test-result" style="display:none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Verificar Elemento do Logo</h2>
+        <button onclick="testBrandLogoElement()">Verificar Elemento</button>
+        <div id="element-result" class="test-result" style="display:none;"></div>
+        <div class="preview" id="logo-preview"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Teste Completo: Simular Carregamento Full Stack</h2>
+        <button onclick="testFullFlow()">Executar Teste Completo</button>
+        <div id="full-flow-result" class="test-result" style="display:none;"></div>
+    </div>
+
+    <script>
+        const API_BASE = localStorage.getItem('API_BASE') || 'http://127.0.0.1:8000/api';
+
+        function showResult(elementId, message, isError = false) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.className = 'test-result ' + (isError ? 'error' : 'success');
+            el.style.display = 'block';
+        }
+
+        function showInfo(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.className = 'test-result info';
+            el.style.display = 'block';
+        }
+
+        async function testBrandingAPI() {
+            try {
+                console.log('Testando API em:', API_BASE + '/site-config/branding');
+                const response = await fetch(`${API_BASE}/site-config/branding`);
+                
+                if (!response.ok) {
+                    showResult('api-result', 
+                        `❌ API retornou erro ${response.status}\n\n` +
+                        `Endpoint: ${API_BASE}/site-config/branding\n` +
+                        `Status: ${response.statusText}`,
+                        true
+                    );
+                    return;
+                }
+
+                const data = await response.json();
+                const output = 
+                    `✅ API respondeu com sucesso!\n\n` +
+                    `Endpoint: ${API_BASE}/site-config/branding\n\n` +
+                    `Resposta:\n${JSON.stringify(data, null, 2)}\n\n` +
+                    `brand_logo_url: ${data.brand_logo_url || '(vazio)'}\n` +
+                    `admin_brand_logo_url: ${data.admin_brand_logo_url || '(vazio)'}`;
+                
+                showResult('api-result', output);
+
+                // Se tem URL, testar carregamento
+                if (data.brand_logo_url) {
+                    testImageLoading(data.brand_logo_url);
+                }
+            } catch (error) {
+                showResult('api-result', 
+                    `❌ Erro ao conectar à API:\n${error.message}\n\n` +
+                    `Certifique-se que:\n` +
+                    `1. O backend está rodando\n` +
+                    `2. A URL da API está correta: ${API_BASE}`,
+                    true
+                );
+            }
+        }
+
+        async function testImageLoading(imageUrl) {
+            try {
+                const response = await fetch(imageUrl, { method: 'HEAD' });
+                if (response.ok) {
+                    showInfo('api-result', 
+                        `✅ Imagem pode ser carregada!\n` +
+                        `URL: ${imageUrl}\n` +
+                        `Status: ${response.status}`
+                    );
+                    
+                    // Mostrar preview
+                    const preview = document.getElementById('logo-preview');
+                    preview.innerHTML = `<img src="${imageUrl}" alt="Logo Preview">`;
+                } else {
+                    showInfo('api-result',
+                        `⚠️ Imagem retornou status ${response.status}\n` +
+                        `URL: ${imageUrl}`
+                    );
+                }
+            } catch (error) {
+                showInfo('api-result',
+                    `⚠️ Não consegui acessar a imagem:\n${error.message}\n\n` +
+                    `URL: ${imageUrl}\n\n` +
+                    `Possíveis causas:\n` +
+                    `1. URL inválida\n` +
+                    `2. Bucket privado sem credenciais\n` +
+                    `3. Arquivo não existe mais`
+                );
+            }
+        }
+
+        function testNewImageUrl() {
+            const testUrl = 'https://via.placeholder.com/200x60?text=Logo+Teste';
+            const output = 
+                `Testando URL de exemplo:\n${testUrl}\n\n` +
+                `HTML:\n<img id="brandLogo" src="${testUrl}">\n\n` +
+                `JavaScript:\n` +
+                `document.getElementById('brandLogo').src = '${testUrl}';`;
+            
+            showInfo('image-result', output);
+        }
+
+        function testBrandLogoElement() {
+            const logoEl = document.getElementById('brandLogo');
+            if (!logoEl) {
+                showResult('element-result',
+                    `❌ Elemento #brandLogo não encontrado na página!`,
+                    true
+                );
+                return;
+            }
+
+            const output = 
+                `✅ Elemento encontrado!\n\n` +
+                `Tag: ${logoEl.tagName}\n` +
+                `ID: ${logoEl.id}\n` +
+                `Classe: ${logoEl.className}\n` +
+                `SRC atual: ${logoEl.src}\n` +
+                `ALT: ${logoEl.alt}\n\n` +
+                `Height: ${logoEl.height} | Width: ${logoEl.width}\n` +
+                `Natural Height: ${logoEl.naturalHeight} | Natural Width: ${logoEl.naturalWidth}`;
+            
+            showResult('element-result', output);
+        }
+
+        async function testFullFlow() {
+            const steps = [];
+            
+            // Step 1: Testar API
+            steps.push('📡 Passo 1: Testando API...');
+            try {
+                const response = await fetch(`${API_BASE}/site-config/branding`);
+                if (!response.ok) {
+                    steps.push(`❌ API retornou ${response.status}`);
+                    showResult('full-flow-result', steps.join('\n'), true);
+                    return;
+                }
+                const data = await response.json();
+                steps.push(`✅ API respondeu`);
+                steps.push(`   URL: ${data.brand_logo_url || '(vazio)'}`);
+
+                if (!data.brand_logo_url) {
+                    steps.push(`\n⚠️ PROBLEMA: Nenhuma URL de logo salva no banco!`);
+                    steps.push(`   Você precisa ir ao painel admin e enviar uma imagem.`);
+                    showResult('full-flow-result', steps.join('\n'), true);
+                    return;
+                }
+
+                // Step 2: Testar carregamento
+                steps.push('\n📥 Passo 2: Testando carregamento da imagem...');
+                const imgTest = new Image();
+                imgTest.src = data.brand_logo_url;
+                
+                await new Promise((resolve, reject) => {
+                    imgTest.onload = () => {
+                        steps.push(`✅ Imagem carregada com sucesso!`);
+                        steps.push(`   Tamanho: ${imgTest.width}x${imgTest.height}px`);
+                        resolve();
+                    };
+                    imgTest.onerror = () => {
+                        steps.push(`❌ Erro ao carregar imagem`);
+                        steps.push(`   URL: ${data.brand_logo_url}`);
+                        reject('Imagem não pode ser carregada');
+                    };
+                    setTimeout(() => reject('Timeout'), 5000);
+                });
+
+                // Step 3: Testar elemento
+                steps.push('\n🎯 Passo 3: Verificando elemento #brandLogo...');
+                const el = document.getElementById('brandLogo');
+                if (!el) {
+                    steps.push(`❌ Elemento #brandLogo não encontrado`);
+                    showResult('full-flow-result', steps.join('\n'), true);
+                    return;
+                }
+                steps.push(`✅ Elemento encontrado`);
+
+                // Step 4: Atualizar elemento
+                steps.push('\n⚙️  Passo 4: Atualizando elemento...');
+                el.src = data.brand_logo_url;
+                steps.push(`✅ src atualizado para: ${data.brand_logo_url}`);
+
+                steps.push('\n🎉 SUCESSO! Todo o fluxo funcionou corretamente.');
+                steps.push('\nSe o logo ainda não aparece no site:');
+                steps.push('1. Recarregue a página (Ctrl+F5)');
+                steps.push('2. Limpe o cache do navegador');
+                steps.push('3. Verifique se a URL da API está correta');
+
+                showResult('full-flow-result', steps.join('\n'));
+
+            } catch (error) {
+                steps.push(`\n❌ Erro: ${error}`);
+                showResult('full-flow-result', steps.join('\n'), true);
+            }
+        }
+
+        // Teste automaticamente ao abrir
+        window.addEventListener('load', () => {
+            console.log('Página de teste carregada. API_BASE:', API_BASE);
+            testBrandingAPI();
+        });
+    </script>
+</body>
+</html>

@@ -391,6 +391,29 @@ function renderBranding() {
     document.getElementById('brandLogoUrl').value = state.branding.brand_logo_url || '';
     document.getElementById('adminBrandLogoUrl').value = state.branding.admin_brand_logo_url || '';
 
+    // Show preview of main brand logo
+    const brandLogoPreview = document.getElementById('brandLogoPreview');
+    if (brandLogoPreview && state.branding.brand_logo_url) {
+        brandLogoPreview.src = state.branding.brand_logo_url;
+        brandLogoPreview.style.display = 'block';
+        brandLogoPreview.onerror = () => {
+            console.warn('Failed to load brand logo preview:', state.branding.brand_logo_url);
+            brandLogoPreview.style.display = 'none';
+        };
+    }
+
+    // Show preview of admin brand logo
+    const adminBrandLogoPreview = document.getElementById('adminBrandLogoPreview');
+    if (adminBrandLogoPreview && state.branding.admin_brand_logo_url) {
+        adminBrandLogoPreview.src = state.branding.admin_brand_logo_url;
+        adminBrandLogoPreview.style.display = 'block';
+        adminBrandLogoPreview.onerror = () => {
+            console.warn('Failed to load admin brand logo preview:', state.branding.admin_brand_logo_url);
+            adminBrandLogoPreview.style.display = 'none';
+        };
+    }
+
+    // Legacy: Show in admin header logo
     const adminBrandLogo = document.getElementById('adminBrandLogo');
     if (adminBrandLogo && (state.branding.admin_brand_logo_url || state.branding.brand_logo_url)) {
         adminBrandLogo.src = state.branding.admin_brand_logo_url || state.branding.brand_logo_url;

@@ -66,11 +66,17 @@
                         <input type="text" id="brandLogoUrl" placeholder="https://bucket.exemplo.com/branding/logo-site.png">
                         <input type="file" id="brandLogoFile" accept="image/*">
                         <small>Ao enviar, a imagem vai para o bucket e a URL fica salva no PostgreSQL.</small>
+                        <div class="logo-preview-container" style="margin-top: 10px;">
+                            <img id="brandLogoPreview" src="" alt="Preview do logo do site" style="display:none; max-height: 60px; max-width: 200px; object-fit: contain;">
+                        </div>
                     </label>
                     <label class="full upload-field">Logotipo do painel administrativo
                         <input type="text" id="adminBrandLogoUrl" placeholder="https://bucket.exemplo.com/branding/logo-admin.png">
                         <input type="file" id="adminBrandLogoFile" accept="image/*">
                         <small>Se deixar vazio, o painel pode usar o mesmo logo principal.</small>
+                        <div class="logo-preview-container" style="margin-top: 10px;">
+                            <img id="adminBrandLogoPreview" src="" alt="Preview do logo admin" style="display:none; max-height: 60px; max-width: 200px; object-fit: contain;">
+                        </div>
                     </label>
                     <div class="form-actions full">
                         <button type="submit" class="admin-btn">Salvar branding</button>
