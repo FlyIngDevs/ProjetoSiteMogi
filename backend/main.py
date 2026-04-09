@@ -37,7 +37,7 @@ except Exception as e:
     raise
 
 try:
-    from app.routes import admin, auth, annotators, jobs, carousel, sponsors
+    from app.routes import admin, auth, annotators, jobs, carousel, sponsors, site_config
     print("✓ Routes imported", file=sys.stderr)
 except Exception as e:
     print(f"✗ ERROR importing routes: {e}", file=sys.stderr)
@@ -133,6 +133,7 @@ try:
     app.include_router(jobs.router)
     app.include_router(carousel.router)
     app.include_router(sponsors.router)
+    app.include_router(site_config.router)
     print("✓ All routes included", file=sys.stderr)
 except Exception as e:
     print(f"✗ ERROR including routes: {e}", file=sys.stderr)

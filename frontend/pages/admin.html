@@ -12,7 +12,7 @@
     <div class="admin-shell">
         <header class="admin-header">
             <div>
-                <img src="../img/bomcontato-logo.png" alt="Bom Contato" class="admin-brand-logo">
+                <img id="adminBrandLogo" src="../img/bomcontato-logo.png" alt="Bom Contato" class="admin-brand-logo">
                 <h1>Painel Administrativo</h1>
                 <p class="admin-subtitle">Gerencie empresas, vagas, banners do carousel e patrocinadores.</p>
             </div>
@@ -55,6 +55,28 @@
                 </div>
                 <p id="adminDataMessage" class="form-message"></p>
                 <div class="stats-grid" id="statsGrid"></div>
+            </section>
+
+            <section class="admin-card">
+                <div class="panel-header">
+                    <h3>Branding do site</h3>
+                </div>
+                <form id="brandingForm" class="admin-form two-cols">
+                    <label class="full upload-field">Logotipo principal do site
+                        <input type="text" id="brandLogoUrl" placeholder="https://bucket.exemplo.com/branding/logo-site.png">
+                        <input type="file" id="brandLogoFile" accept="image/*">
+                        <small>Ao enviar, a imagem vai para o bucket e a URL fica salva no PostgreSQL.</small>
+                    </label>
+                    <label class="full upload-field">Logotipo do painel administrativo
+                        <input type="text" id="adminBrandLogoUrl" placeholder="https://bucket.exemplo.com/branding/logo-admin.png">
+                        <input type="file" id="adminBrandLogoFile" accept="image/*">
+                        <small>Se deixar vazio, o painel pode usar o mesmo logo principal.</small>
+                    </label>
+                    <div class="form-actions full">
+                        <button type="submit" class="admin-btn">Salvar branding</button>
+                    </div>
+                    <p id="brandingMessage" class="form-message full"></p>
+                </form>
             </section>
 
             <section class="admin-tabs">

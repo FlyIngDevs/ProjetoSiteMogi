@@ -1,5 +1,6 @@
 // ==================== API Configuration ====================
 const API_BASE = window.SHOPPINGHUB_CONFIG?.API_BASE || 'http://127.0.0.1:8000/api';
+const ASSETS = window.SHOPPINGHUB_CONFIG?.ASSETS || {};
 
 const params = new URLSearchParams(window.location.search);
 const companySlug = params.get('company');
@@ -48,7 +49,7 @@ async function loadCompanyData() {
 
 function renderCompanyPage(company) {
     document.getElementById('companyNameNav').textContent = company.company_name;
-    document.getElementById('companyLogo').src = normalizeAssetPath(company.logo_url, '../img/logo-placeholder.jpg');
+    document.getElementById('companyLogo').src = normalizeAssetPath(company.logo_url, ASSETS.PLACEHOLDER_LOGO_URL_MICROSITE || '../img/logo-placeholder.jpg');
     document.getElementById('companyName').textContent = company.company_name;
     document.getElementById('companyLocation').innerHTML =
         `<i class="fas fa-map-marker-alt"></i> ${company.city}, ${company.state}`;
@@ -91,7 +92,7 @@ function renderGallery(company) {
 
     gallery.innerHTML = photos.map((photo, index) => `
         <div class="gallery-item">
-            <img src="${normalizeAssetPath(photo, '../img/placeholder.jpg')}" alt="Galeria ${index + 1}">
+            <img src="${normalizeAssetPath(photo, ASSETS.PLACEHOLDER_IMAGE_URL_MICROSITE || '../img/placeholder.jpg')}" alt="Galeria ${index + 1}">
         </div>
     `).join('');
 }

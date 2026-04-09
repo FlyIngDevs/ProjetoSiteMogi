@@ -8,6 +8,10 @@ const state = {
     jobs: [],
     carousel: [],
     sponsors: [],
+    branding: {
+        brand_logo_url: '',
+        admin_brand_logo_url: ''
+    },
     editing: {
         annotatorId: null,
         jobId: null,
@@ -108,18 +112,23 @@ async function uploadAdminImage(file, folder, targetInputId, messageId) {
         }
 
         setMessage(messageId, 'Imagem enviada com sucesso.');
+        return payload;
     } catch (error) {
         setMessage(messageId, error.message, true);
+        return null;
     }
 }
 
-function wireImageUpload(fileInputId, folder, targetInputId, messageId) {
+function wireImageUpload(fileInputId, folder, targetInputId, messageId, onUploaded = null) {
     const fileInput = document.getElementById(fileInputId);
     if (!fileInput) return;
 
     fileInput.addEventListener('change', async (event) => {
         const selectedFile = event.target.files?.[0];
-        await uploadAdminImage(selectedFile, folder, targetInputId, messageId);
+        const payload = await uploadAdminImage(selectedFile, folder, targetInputId, messageId);
+        if (payload && onUploaded) {
+            await onUploaded(payload);
+        }
         fileInput.value = '';
     });
 }
@@ -229,10 +238,11 @@ async function loadAdminData() {
         fetchJson(`${API_BASE}/admin/annotators`, { headers: authHeaders(false) }),
         fetchJson(`${API_BASE}/admin/jobs`, { headers: authHeaders(false) }),
         fetchJson(`${API_BASE}/admin/carousel`, { headers: authHeaders(false) }),
-        fetchJson(`${API_BASE}/admin/sponsorships`, { headers: authHeaders(false) })
+        fetchJson(`${API_BASE}/admin/sponsorships`, { headers: authHeaders(false) }),
+        fetchJson(`${API_BASE}/admin/branding`, { headers: authHeaders(false) })
     ]);
 
-    const [dashboardResult, annotatorsResult, jobsResult, carouselResult, sponsorsResult] = results;
+    const [dashboardResult, annotatorsResult, jobsResult, carouselResult, sponsorsResult, brandingResult] = results;
     const failures = results.filter(result => result.status === 'rejected');
 
     document.getElementById('adminWelcome').textContent = `Bem-vindo, ${state.user.full_name}`;
@@ -246,11 +256,15 @@ async function loadAdminData() {
     state.jobs = jobsResult.status === 'fulfilled' ? jobsResult.value : [];
     state.carousel = carouselResult.status === 'fulfilled' ? carouselResult.value : [];
     state.sponsors = sponsorsResult.status === 'fulfilled' ? sponsorsResult.value : [];
+    state.branding = brandingResult.status === 'fulfilled'
+        ? brandingResult.value
+        : { brand_logo_url: '', admin_brand_logo_url: '' };
 
     renderAnnotators();
     renderJobs();
     renderCarousel();
     renderSponsors();
+    renderBranding();
     fillAnnotatorSelect();
 }
 
@@ -371,6 +385,16 @@ function resetSponsorForm() {
     document.getElementById('sponsorOrder').value = '0';
     document.getElementById('sponsorIsActive').checked = true;
     setMessage('sponsorMessage', '');
+}
+
+function renderBranding() {
+    document.getElementById('brandLogoUrl').value = state.branding.brand_logo_url || '';
+    document.getElementById('adminBrandLogoUrl').value = state.branding.admin_brand_logo_url || '';
+
+    const adminBrandLogo = document.getElementById('adminBrandLogo');
+    if (adminBrandLogo && (state.branding.admin_brand_logo_url || state.branding.brand_logo_url)) {
+        adminBrandLogo.src = state.branding.admin_brand_logo_url || state.branding.brand_logo_url;
+    }
 }
 
 function editAnnotator(id) {
@@ -634,6 +658,27 @@ async function saveSponsor(event) {
     }
 }
 
+async function saveBranding(event) {
+    if (event) event.preventDefault();
+
+    const payload = {
+        brand_logo_url: normalizeAssetInput(document.getElementById('brandLogoUrl').value),
+        admin_brand_logo_url: normalizeAssetInput(document.getElementById('adminBrandLogoUrl').value)
+    };
+
+    try {
+        state.branding = await fetchJson(`${API_BASE}/admin/branding`, {
+            method: 'PUT',
+            headers: authHeaders(),
+            body: JSON.stringify(payload)
+        });
+        renderBranding();
+        setMessage('brandingMessage', 'Branding salvo com sucesso.');
+    } catch (error) {
+        setMessage('brandingMessage', error.message, true);
+    }
+}
+
 function activateTab(tabName) {
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.tab === tabName);
@@ -650,6 +695,7 @@ document.getElementById('annotatorForm').addEventListener('submit', saveAnnotato
 document.getElementById('jobAdminForm').addEventListener('submit', saveJob);
 document.getElementById('carouselForm').addEventListener('submit', saveCarousel);
 document.getElementById('sponsorForm').addEventListener('submit', saveSponsor);
+document.getElementById('brandingForm').addEventListener('submit', saveBranding);
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => activateTab(btn.dataset.tab));
 });
@@ -681,6 +727,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     wireImageUpload('carouselImageFile', 'carousel', 'carouselImageUrl', 'carouselMessage');
     wireImageUpload('sponsorLogoFile', 'sponsors', 'sponsorLogoUrl', 'sponsorMessage');
     wireImageUpload('sponsorBannerFile', 'sponsors', 'sponsorBannerUrl', 'sponsorMessage');
+    wireImageUpload('brandLogoFile', 'branding', 'brandLogoUrl', 'brandingMessage', async () => saveBranding());
+    wireImageUpload('adminBrandLogoFile', 'branding', 'adminBrandLogoUrl', 'brandingMessage', async () => saveBranding());
     await loadAdminStatus();
     await tryRestoreSession();
 });

@@ -45,6 +45,14 @@ class Settings(BaseSettings):
     smtp_use_ssl: bool = False
     job_application_max_resume_size_mb: int = 5
 
+    # Object storage
+    storage_endpoint_url: str = ""
+    storage_bucket_name: str = ""
+    storage_access_key_id: str = ""
+    storage_secret_access_key: str = ""
+    storage_region: str = "auto"
+    storage_public_base_url: str = ""
+
     # CORS
     allowed_origins: List[str] = Field(default_factory=lambda: [
         "null",

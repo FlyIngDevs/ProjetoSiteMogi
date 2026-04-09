@@ -1,5 +1,6 @@
 // ==================== API Configuration ====================
 const API_BASE = window.SHOPPINGHUB_CONFIG?.API_BASE || 'http://127.0.0.1:8000/api';
+const ASSETS = window.SHOPPINGHUB_CONFIG?.ASSETS || {};
 
 // ==================== CAROUSEL ====================
 let currentSlide = 0;
@@ -42,7 +43,7 @@ function renderCarousel() {
         const item = document.createElement('div');
         item.className = `carousel-item ${index === 0 ? 'active' : ''}`;
         item.innerHTML = `
-            <img src="${normalizeAssetPath(slide.image_url, '/img/placeholder.jpg')}" alt="${slide.title}">
+            <img src="${normalizeAssetPath(slide.image_url, ASSETS.PLACEHOLDER_IMAGE_URL || '/img/placeholder.jpg')}" alt="${slide.title}">
             <div class="carousel-caption">
                 <h2>${slide.title}</h2>
                 <p>${slide.description || 'Bem-vindo ao Bom Contato'}</p>
@@ -291,9 +292,9 @@ function createCompanyCard(company) {
 
     card.innerHTML = `
         <div class="company-header">
-            <img src="${normalizeAssetPath(company.banner_url, '/img/placeholder.jpg')}" alt="${company.company_name}" class="company-banner">
+            <img src="${normalizeAssetPath(company.banner_url, ASSETS.PLACEHOLDER_IMAGE_URL || '/img/placeholder.jpg')}" alt="${company.company_name}" class="company-banner">
             <div class="company-logo">
-                <img src="${normalizeAssetPath(company.logo_url, '/img/logo-placeholder.jpg')}" alt="Logo">
+                <img src="${normalizeAssetPath(company.logo_url, ASSETS.PLACEHOLDER_LOGO_URL || '/img/logo-placeholder.jpg')}" alt="Logo">
             </div>
         </div>
         <div class="company-body">
@@ -503,7 +504,7 @@ function renderSponsors(sponsors) {
             card.onclick = () => window.open(clickUrl, '_blank');
         }
         card.innerHTML = `
-            <img src="${normalizeAssetPath(sponsorImage, '/img/logo-placeholder.jpg')}" alt="${sponsor.company_name}" class="${imageClass}">
+            <img src="${normalizeAssetPath(sponsorImage, ASSETS.PLACEHOLDER_LOGO_URL || '/img/logo-placeholder.jpg')}" alt="${sponsor.company_name}" class="${imageClass}">
             <h3>${sponsor.company_name}</h3>
             <p>${sponsor.description || 'Patrocinador oficial'}</p>
         `;
