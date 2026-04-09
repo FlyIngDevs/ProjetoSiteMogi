@@ -5,31 +5,50 @@ const ASSETS = window.SHOPPINGHUB_CONFIG?.ASSETS || {};
 // ==================== BRANDING ====================
 async function loadBranding() {
     try {
+        console.log('[LOGO] Iniciando carregamento do logo...');
+        console.log('[LOGO] API_BASE:', API_BASE);
+        
         const response = await fetch(`${API_BASE}/site-config/branding`);
+        
         if (!response.ok) {
-            console.info('Branding endpoint returned', response.status, '- using default logo');
+            console.warn(`[LOGO] API retornou status ${response.status} - usando logo padrão`);
             return;
         }
         
         const branding = await response.json();
-        console.log('Branding loaded:', branding);
+        console.log('[LOGO] Resposta da API:', branding);
         
-        if (branding && branding.brand_logo_url) {
+        if (branding && branding.brand_logo_url && branding.brand_logo_url.trim()) {
             const logoElement = document.getElementById('brandLogo');
-            if (logoElement) {
-                console.log('Updating logo to:', branding.brand_logo_url);
-                logoElement.src = branding.brand_logo_url;
-                logoElement.alt = 'Logotipo do site';
-                logoElement.onerror = () => {
-                    console.warn('Failed to load logo image:', branding.brand_logo_url);
-                    logoElement.src = 'img/bomcontato-logo.png';
-                };
+            
+            if (!logoElement) {
+                console.error('[LOGO] Elemento #brandLogo não encontrado no HTML!');
+                return;
             }
+            
+            console.log('[LOGO] Atualizando logo para:', branding.brand_logo_url);
+            logoElement.src = branding.brand_logo_url;
+            logoElement.alt = 'Logotipo do site';
+            
+            // Tratador de erro para a imagem
+            logoElement.onerror = function() {
+                console.error('[LOGO] Falha ao carregar imagem. Retornando ao padrão.');
+                console.error('[LOGO] URL tentada:', branding.brand_logo_url);
+                this.src = 'img/bomcontato-logo.png';
+                this.onerror = null; // Previne loop infinito
+            };
+            
+            // Quando a imagem carregar com sucesso
+            logoElement.onload = function() {
+                console.log('[LOGO] Logo carregado com sucesso! ✅');
+            };
+            
+            console.log('[LOGO] Logo configurado! ✅');
         } else {
-            console.info('No brand logo URL provided, using default');
+            console.info('[LOGO] Nenhuma URL de logo no banco - usando padrão');
         }
     } catch (error) {
-        console.warn('Error loading branding:', error);
+        console.error('[LOGO] Erro ao carregar branding:', error);
     }
 }
 

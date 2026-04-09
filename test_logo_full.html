@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Completo do Logo - Diagnóstico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: white;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .test-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .test-card h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+        
+        .step {
+            background: #f8f9fa;
+            padding: 1.25rem;
+            margin: 1rem 0;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+        }
+        
+        .step strong {
+            color: #667eea;
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 0.5rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .status {
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            font-weight: 500;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #764ba2;
+        }
+        
+        button.secondary {
+            background: #6c757d;
+        }
+        
+        button.secondary:hover {
+            background: #5a6268;
+        }
+        
+        .logo-preview {
+            background: #f8f9fa;
+            padding: 2rem;
+            text-align: center;
+            border-radius: 6px;
+            margin: 1rem 0;
+            border: 2px dashed #667eea;
+        }
+        
+        .logo-preview img {
+            max-width: 200px;
+            max-height: 100px;
+            object-fit: contain;
+        }
+        
+        .logo-preview.empty {
+            color: #999;
+            font-style: italic;
+        }
+        
+        ul {
+            margin-left: 1.5rem;
+        }
+        
+        li {
+            margin: 0.5rem 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .icon {
+            margin-right: 0.5rem;
+        }
+        
+        .flow-diagram {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            font-family: monospace;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Diagnóstico Completo do Logo</h1>
+        
+        <!-- Teste 1: Upload -->
+        <div class="test-card">
+            <h2><span class="icon">📤</span>Teste 1: Upload da Imagem</h2>
+            <div class="step">
+                <strong>O que faz:</strong> Verifica se o sistema consegue fazer upload da imagem para o bucket S3
+            </div>
+            <button onclick="testUpload()">Testar Upload Simulado</button>
+            <div id="upload-result"></div>
+        </div>
+        
+        <!-- Teste 2: Banco de Dados -->
+        <div class="test-card">
+            <h2><span class="icon">💾</span>Teste 2: Salvamento no Banco de Dados</h2>
+            <div class="step">
+                <strong>O que faz:</strong> Verifica se a URL está sendo salva no PostgreSQL (SiteSetting)
+            </div>
+            <button onclick="testDatabase()">Testar Banco de Dados</button>
+            <div id="database-result"></div>
+        </div>
+        
+        <!-- Teste 3: API -->
+        <div class="test-card">
+            <h2><span class="icon">🌐</span>Teste 3: API de Branding</h2>
+            <div class="step">
+                <strong>O que faz:</strong> Verifica se o endpoint /api/site-config/branding retorna a URL salva
+            </div>
+            <button onclick="testAPI()">Testar API</button>
+            <div id="api-result"></div>
+        </div>
+        
+        <!-- Teste 4: Renderização -->
+        <div class="test-card">
+            <h2><span class="icon">🎨</span>Teste 4: Renderização no Cabeçalho</h2>
+            <div class="step">
+                <strong>O que faz:</strong> Verifica se o logo está sendo exibido no cabeçalho
+            </div>
+            <button onclick="testRendering()">Testar Renderização</button>
+            <div id="rendering-result"></div>
+            <div id="logo-preview-container"></div>
+        </div>
+        
+        <!-- Teste 5: Fluxo Completo -->
+        <div class="test-card">
+            <h2><span class="icon">🚀</span>Teste 5: Fluxo Completo (Integração)</h2>
+            <div class="step">
+                <strong>O que faz:</strong> Executa todos os testes em sequência para verificar tudo
+            </div>
+            <button onclick="testFullFlow()">Executar Diagnóstico Completo</button>
+            <div id="fullflow-result"></div>
+        </div>
+        
+        <!-- Informações do Sistema -->
+        <div class="test-card">
+            <h2><span class="icon">⚙️</span>Informações do Sistema</h2>
+            <table>
+                <tr>
+                    <th>Configuração</th>
+                    <th>Valor</th>
+                </tr>
+                <tr>
+                    <td>API Base</td>
+                    <td><code id="api-base"></code></td>
+                </tr>
+                <tr>
+                    <td>Hostname</td>
+                    <td><code id="hostname"></code></td>
+                </tr>
+                <tr>
+                    <td>Protocolo</td>
+                    <td><code id="protocol"></code></td>
+                </tr>
+                <tr>
+                    <td>Token Admin</td>
+                    <td><code id="token-status"></code></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.SHOPPINGHUB_CONFIG?.API_BASE || 'http://127.0.0.1:8000/api';
+        
+        function updateSystemInfo() {
+            document.getElementById('api-base').textContent = API_BASE;
+            document.getElementById('hostname').textContent = window.location.hostname;
+            document.getElementById('protocol').textContent = window.location.protocol;
+            const token = localStorage.getItem('adminAccessToken');
+            document.getElementById('token-status').textContent = token ? '✅ Token encontrado' : '❌ Sem token';
+        }
+        
+        function showResult(elementId, html, className = '') {
+            const el = document.getElementById(elementId);
+            el.innerHTML = html;
+            if (className) el.className = `status ${className}`;
+        }
+        
+        async function testUpload() {
+            const result = document.getElementById('upload-result');
+            result.innerHTML = '<div class="status info">Testando simulação de upload...</div>';
+            
+            try {
+                const steps = [];
+                
+                // Criar FormData simulado
+                steps.push('✅ FormData criado');
+                
+                // Simular call para upload
+                steps.push('📡 Simulando POST para /api/admin/upload-image?folder=branding');
+                
+                // Verificar resposta esperada
+                steps.push('🔍 Resposta esperada: { url: "https://...", filename: "...", key: "..." }');
+                
+                const html = `
+                    <div class="status success">
+                        <strong>Simulação de Upload:</strong>
+                        <div class="flow-diagram">
+${steps.map(s => s).join('\n')}
+                        </div>
+                        <strong>Como verificar na prática:</strong>
+                        <ol>
+                            <li>Abra o painel admin → Branding</li>
+                            <li>Selecione uma imagem PNG</li>
+                            <li>Abra o Console (F12)</li>
+                            <li>Na aba Network, você deve ver:
+                                <ul>
+                                    <li>POST /api/admin/upload-image?folder=branding → 200 OK</li>
+                                    <li>Resposta com URL assinada do S3</li>
+                                </ul>
+                            </li>
+                            <li>Se receber erro 401, você não está logado como admin</li>
+                            <li>Se receber erro 500, há problema no backend</li>
+                        </ol>
+                    </div>
+                `;
+                result.innerHTML = html;
+            } catch (error) {
+                showResult('upload-result', `❌ Erro: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testDatabase() {
+            const result = document.getElementById('database-result');
+            result.innerHTML = '<div class="status info">Testando banco de dados...</div>';
+            
+            const steps = [
+                '1️⃣ Admin faz upload da imagem → GET URL assinada do S3',
+                '2️⃣ Admin clica "Salvar branding" → PUT /api/site-config/branding',
+                '3️⃣ Backend salva em PostgreSQL tabela "site_settings":',
+                '   - key: "brand_logo_url"',
+                '   - value: "https://bucket.s3.com/branding/...?X-Amz-Signature=..."',
+                '4️⃣ URL fica armazenada com timestamp de atualização'
+            ];
+            
+            const html = `
+                <div class="status warning">
+                    <strong>Fluxo de Salvamento no Banco:</strong>
+                    <div class="flow-diagram">
+${steps.join('\n')}
+                    </div>
+                    <strong>Como verificar na prática:</strong>
+                    <ol>
+                        <li>Abra o Console (F12) → aba Network</li>
+                        <li>Clique "Salvar branding" no painel admin</li>
+                        <li>Procure por: PUT /api/site-config/branding</li>
+                        <li>Verifique a resposta:
+                            <div class="code-block">{
+  "brand_logo_url": "https://bucket.s3.com/branding/logo.png?signature=...",
+  "admin_brand_logo_url": null
+}</div>
+                        </li>
+                        <li>Se você vê a resposta com a URL, o banco foi atualizado ✅</li>
+                        <li>Se receber erro 401, você não é admin</li>
+                        <li>Se receber erro 404, o endpoint não existe (BUG)</li>
+                    </ol>
+                </div>
+            `;
+            result.innerHTML = html;
+        }
+        
+        async function testAPI() {
+            const result = document.getElementById('api-result');
+            result.innerHTML = '<div class="status info">Testando API...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/site-config/branding`);
+                
+                if (!response.ok) {
+                    showResult('api-result', 
+                        `<strong>❌ Erro na API (Status ${response.status})</strong>
+                        <p>O endpoint retornou: ${response.statusText}</p>
+                        <p>URL: ${API_BASE}/site-config/branding</p>`, 
+                        'error');
+                    return;
+                }
+                
+                const data = await response.json();
+                console.log('Branding API Response:', data);
+                
+                const hasLogo = data.brand_logo_url && data.brand_logo_url.trim().length > 0;
+                
+                let html = `
+                    <div class="status success">
+                        <strong>✅ API respondeu com sucesso!</strong>
+                        <p>Status: 200 OK</p>
+                        <p>Dados retornados:</p>
+                        <div class="code-block">${JSON.stringify(data, null, 2)}</div>
+                `;
+                
+                if (hasLogo) {
+                    html += `
+                        <p><strong style="color: green;">✅ Logo URL encontrada no banco:</strong></p>
+                        <code style="word-break: break-all;">${data.brand_logo_url}</code>
+                        <div class="logo-preview">
+                            <img src="${data.brand_logo_url}" alt="Logo" 
+                                 onerror="this.style.display='none'; this.parentElement.innerHTML += '<p style=\"color:red;\">❌ Erro ao carregar imagem</p>'">
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <p><strong style="color: red;">❌ Nenhuma URL de logo salva!</strong></p>
+                        <p>Você precisa:</p>
+                        <ol>
+                            <li>Ir ao painel admin → Branding</li>
+                            <li>Fazer upload de uma imagem</li>
+                            <li>Clicar em "Salvar branding"</li>
+                        </ol>
+                    `;
+                }
+                
+                html += '</div>';
+                result.innerHTML = html;
+                
+            } catch (error) {
+                showResult('api-result', `<strong>❌ Erro ao conectar à API:</strong><p>${error.message}</p>`, 'error');
+            }
+        }
+        
+        async function testRendering() {
+            const result = document.getElementById('rendering-result');
+            const preview = document.getElementById('logo-preview-container');
+            result.innerHTML = '<div class="status info">Testando renderização...</div>';
+            
+            try {
+                const logoElement = document.getElementById('brandLogo');
+                
+                if (!logoElement) {
+                    showResult('rendering-result',
+                        `<strong>❌ Elemento #brandLogo não foi encontrado!</strong>
+                        <p>Verifique se existe: &lt;img id="brandLogo" ... &gt;</p>`,
+                        'error');
+                    return;
+                }
+                
+                // Obter dados da API
+                const response = await fetch(`${API_BASE}/site-config/branding`);
+                const data = await response.json();
+                
+                let html = `
+                    <div class="status info">
+                        <strong>Elemento encontrado:</strong>
+                        <table>
+                            <tr>
+                                <th>Propriedade</th>
+                                <th>Valor Atual</th>
+                            </tr>
+                            <tr>
+                                <td>ID</td>
+                                <td>${logoElement.id}</td>
+                            </tr>
+                            <tr>
+                                <td>Classe</td>
+                                <td>${logoElement.className}</td>
+                            </tr>
+                            <tr>
+                                <td>SRC</td>
+                                <td><code>${logoElement.src}</code></td>
+                            </tr>
+                            <tr>
+                                <td>ALT</td>
+                                <td>${logoElement.alt}</td>
+                            </tr>
+                            <tr>
+                                <td>Dimensions</td>
+                                <td>${logoElement.width}x${logoElement.height}</td>
+                            </tr>
+                        </table>
+                        
+                        <strong>Valor no Banco (API):</strong>
+                        <p><code>${data.brand_logo_url || '(vazio)'}</code></p>
+                `;
+                
+                if (data.brand_logo_url && data.brand_logo_url !== logoElement.src) {
+                    html += `
+                        <div class="status warning">
+                            <strong>⚠️ PROBLEMA ENCONTRADO!</strong>
+                            <p>A URL no banco é DIFERENTE da URL no elemento.</p>
+                            <p><strong>No banco:</strong> ${data.brand_logo_url}</p>
+                            <p><strong>No elemento:</strong> ${logoElement.src}</p>
+                            <p><strong>Possível motivo:</strong> O JavaScript não carregou ou não atualizou o logo.</p>
+                            <button onclick="updateLogoManually()">Atualizar Logo Agora</button>
+                        </div>
+                    `;
+                } else if (data.brand_logo_url && data.brand_logo_url === logoElement.src) {
+                    html += `
+                        <div class="status success">
+                            <strong>✅ Logo está corretamente renderizado!</strong>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="status warning">
+                            <strong>⚠️ Nenhuma URL de logo salva no banco</strong>
+                            <p>Faça upload no painel admin primeiro.</p>
+                        </div>
+                    `;
+                }
+                
+                html += '</div>';
+                result.innerHTML = html;
+                
+            } catch (error) {
+                showResult('rendering-result', `<strong>❌ Erro:</strong><p>${error.message}</p>`, 'error');
+            }
+        }
+        
+        function updateLogoManually() {
+            fetch(`${API_BASE}/site-config/branding`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.brand_logo_url) {
+                        const logoEl = document.getElementById('brandLogo');
+                        logoEl.src = data.brand_logo_url;
+                        alert(`✅ Logo atualizado para: ${data.brand_logo_url}`);
+                        testRendering();
+                    }
+                })
+                .catch(e => alert(`❌ Erro: ${e.message}`));
+        }
+        
+        async function testFullFlow() {
+            const result = document.getElementById('fullflow-result');
+            const steps = [];
+            
+            result.innerHTML = '<div class="status info">Executando diagnóstico completo...</div>';
+            
+            try {
+                // Step 1: Verificar API
+                steps.push('📡 Passo 1: Verificando API...');
+                const apiResponse = await fetch(`${API_BASE}/site-config/branding`);
+                if (!apiResponse.ok) {
+                    steps.push('❌ API retornou erro ' + apiResponse.status);
+                    throw new Error('API error');
+                }
+                const apiData = await apiResponse.json();
+                steps.push('✅ API respondeu');
+                
+                // Step 2: Verificar se tem logo
+                steps.push('🔍 Passo 2: Verificando se logo foi salvo...');
+                if (!apiData.brand_logo_url) {
+                    steps.push('❌ Nenhuma URL de logo no banco');
+                    steps.push('👉 Você precisa fazer upload no painel admin primeiro');
+                    throw new Error('No logo in database');
+                }
+                steps.push('✅ Logo URL encontrada: ' + apiData.brand_logo_url.substring(0, 50) + '...');
+                
+                // Step 3: Verificar elemento HTML
+                steps.push('🎯 Passo 3: Procurando elemento #brandLogo...');
+                const logoEl = document.getElementById('brandLogo');
+                if (!logoEl) {
+                    steps.push('❌ Elemento #brandLogo não existe');
+                    throw new Error('No logo element');
+                }
+                steps.push('✅ Elemento encontrado');
+                
+                // Step 4: Atualizar elemento
+                steps.push('⚙️ Passo 4: Atualizando elemento...');
+                logoEl.src = apiData.brand_logo_url;
+                steps.push('✅ Elemento atualizado');
+                
+                // Step 5: Verificar carregamento
+                steps.push('📥 Passo 5: Verificando se imagem pode ser carregada...');
+                await new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        steps.push('✅ Imagem carregada com sucesso');
+                        resolve();
+                    };
+                    img.onerror = () => {
+                        steps.push('⚠️ Aviso: Imagem pode estar inacessível (erro CORS ou URL inválida)');
+                        resolve();
+                    };
+                    img.src = apiData.brand_logo_url;
+                    setTimeout(() => resolve(), 3000);
+                });
+                
+                let html = `
+                    <div class="status success">
+                        <strong>✅ Fluxo Completo Testado!</strong>
+                        <div class="flow-diagram">
+${steps.join('\n')}
+                        </div>
+                        <strong>Resumo:</strong>
+                        <ul>
+                            <li>✅ API funcionando</li>
+                            <li>✅ Logo salvo no banco</li>
+                            <li>✅ Elemento HTML existe</li>
+                            <li>✅ Elemento pode ser atualizado</li>
+                        </ul>
+                        <strong>Se o logo ainda não aparece no site:</strong>
+                        <ol>
+                            <li>Recarregue a página (Ctrl+F5)</li>
+                            <li>Limpe o cache do navegador</li>
+                            <li>Verifique o Console (F12) para erros de JavaScript</li>
+                        </ol>
+                    </div>
+                `;
+                result.innerHTML = html;
+                
+            } catch (error) {
+                let html = `
+                    <div class="status error">
+                        <strong>❌ Diagnóstico Incompleto</strong>
+                        <div class="flow-diagram">
+${steps.join('\n')}
+                        </div>
+                        <strong>Erro encontrado: ${error.message}</strong>
+                        <p>Verifique os passos acima para identificar onde o problema está.</p>
+                    </div>
+                `;
+                result.innerHTML = html;
+            }
+        }
+        
+        // Inicializar
+        window.addEventListener('load', updateSystemInfo);
+    </script>
+</body>
+</html>

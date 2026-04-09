@@ -260,6 +260,12 @@ body.admin-body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
+    min-width: 0;
+}
+
+.admin-grid > * {
+    min-width: 0;
+    overflow: hidden;
 }
 
 @media (max-width: 1200px) {
@@ -290,11 +296,13 @@ body.admin-body {
 
 .table-wrap {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .admin-table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: auto;
 }
 
 .admin-table th,
@@ -303,6 +311,8 @@ body.admin-body {
     text-align: left;
     border-bottom: 1px solid var(--admin-border);
     vertical-align: top;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .admin-table th {
@@ -310,6 +320,16 @@ body.admin-body {
     font-size: .84rem;
     text-transform: uppercase;
     letter-spacing: .08em;
+}
+
+.admin-table tbody tr:hover {
+    background: #fafaf8;
+}
+
+.admin-table td:nth-child(1) {
+    max-width: 300px;
+    word-break: break-all;
+    font-size: 0.85rem;
 }
 
 .row-actions {
