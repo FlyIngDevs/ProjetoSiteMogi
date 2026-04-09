@@ -44,8 +44,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.addEventListener('DOMContentLoaded', async () => {
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 8000);
+
     try {
-        const response = await fetch(`${window.SHOPPINGHUB_CONFIG.API_BASE}/site-config/branding`);
+        const response = await fetch(`${window.SHOPPINGHUB_CONFIG.API_BASE}/site-config/branding`, {
+            signal: controller.signal
+        });
         if (!response.ok) return;
 
         const branding = await response.json();
@@ -67,5 +72,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         }
     } catch {
         // Keep static fallbacks when the site-config endpoint is unavailable.
+    } finally {
+        window.clearTimeout(timeoutId);
     }
 });

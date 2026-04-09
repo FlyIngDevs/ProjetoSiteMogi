@@ -52,6 +52,7 @@ check("sqlalchemy", lambda: __import__('sqlalchemy'))
 check("pydantic", lambda: __import__('pydantic'))
 check("pydantic_settings", lambda: __import__('pydantic_settings'))
 check("uvicorn", lambda: __import__('uvicorn'))
+check("boto3", lambda: __import__('boto3'))
 
 # Configuration
 print("\n4. APPLICATION CONFIG")
@@ -65,7 +66,8 @@ check("All models available", lambda: (
     __import__('app.models.annotator', fromlist=['Annotator']),
     __import__('app.models.job', fromlist=['Job']),
     __import__('app.models.carousel', fromlist=['Carousel']),
-    __import__('app.models.sponsorship', fromlist=['Sponsorship'])
+    __import__('app.models.sponsorship', fromlist=['Sponsorship']),
+    __import__('app.models.site_setting', fromlist=['SiteSetting'])
 ))
 
 # Routes
@@ -76,7 +78,8 @@ check("All routes", lambda: (
     __import__('app.routes.annotators', fromlist=['router']),
     __import__('app.routes.jobs', fromlist=['router']),
     __import__('app.routes.carousel', fromlist=['router']),
-    __import__('app.routes.sponsors', fromlist=['router'])
+    __import__('app.routes.sponsors', fromlist=['router']),
+    __import__('app.routes.site_config', fromlist=['router'])
 ))
 
 # Main App
