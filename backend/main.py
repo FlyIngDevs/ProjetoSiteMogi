@@ -149,7 +149,7 @@ print("=" * 70, file=sys.stderr)
 async def root():
     """API info endpoint"""
     return {
-        "message": "Shopping Platform API",
+        "message": "Bom Contato API",
         "version": settings.api_version,
         "docs": "/docs"
     }

@@ -144,7 +144,7 @@ async def apply_to_job(
 
     recipient_email = job.contact_email or job.company_email
     email_body = "\n".join([
-        "Nova candidatura recebida pelo ShoppingHub.",
+        "Nova candidatura recebida pelo Bom Contato.",
         "",
         f"Vaga: {job.title}",
         f"Empresa: {job.company_name}",

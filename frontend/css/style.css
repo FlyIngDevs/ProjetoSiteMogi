@@ -68,6 +68,14 @@ body {
     min-width: fit-content;
 }
 
+.brand-logo {
+    display: block;
+    height: 56px;
+    width: auto;
+    max-width: 260px;
+    object-fit: contain;
+}
+
 .navbar-brand i {
     font-size: 1.8rem;
 }
@@ -1071,6 +1079,11 @@ body {
 
     .navbar-brand span {
         display: none;
+    }
+
+    .brand-logo {
+        height: 40px;
+        max-width: 180px;
     }
 
     .section-title {

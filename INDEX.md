@@ -1,4 +1,4 @@
-# 📑 ShoppingHub - Índice de Documentação e Arquivos
+# 📑 Bom Contato - Índice de Documentação e Arquivos
 
 ## 🗂️ Estrutura Completa do Projeto
 

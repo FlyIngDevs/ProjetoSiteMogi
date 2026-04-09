@@ -45,7 +45,7 @@ function renderCarousel() {
             <img src="${normalizeAssetPath(slide.image_url, '/img/placeholder.jpg')}" alt="${slide.title}">
             <div class="carousel-caption">
                 <h2>${slide.title}</h2>
-                <p>${slide.description || 'Bem-vindo ao ShoppingHub'}</p>
+                <p>${slide.description || 'Bem-vindo ao Bom Contato'}</p>
             </div>
         `;
         carousel.appendChild(item);

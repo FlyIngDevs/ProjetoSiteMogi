@@ -1,4 +1,4 @@
-# 🏗️ Arquitetura e Boas Práticas do ShoppingHub
+# 🏗️ Arquitetura e Boas Práticas do Bom Contato
 
 ## Visão Geral da Arquitetura
 

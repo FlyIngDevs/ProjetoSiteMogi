@@ -46,13 +46,13 @@ body.admin-body {
     margin: 0 0 .4rem;
 }
 
-.admin-kicker {
-    margin: 0 0 .5rem;
-    text-transform: uppercase;
-    letter-spacing: .16em;
-    color: var(--admin-warm);
-    font-size: .8rem;
-    font-weight: 700;
+.admin-brand-logo {
+    display: block;
+    width: auto;
+    height: 60px;
+    max-width: 280px;
+    margin-bottom: .75rem;
+    object-fit: contain;
 }
 
 .admin-subtitle {

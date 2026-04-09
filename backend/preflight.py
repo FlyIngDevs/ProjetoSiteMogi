@@ -84,7 +84,7 @@ print("\n7. FASTAPI APPLICATION")
 def check_main_app():
     from main import app
     assert app is not None
-    assert app.title == "Shopping Platform API"
+    assert app.title == "Bom Contato API"
     assert len(app.routes) > 0
     return app
 

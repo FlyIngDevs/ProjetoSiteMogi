@@ -1,4 +1,4 @@
-# 📦 API Reference - ShoppingHub
+# 📦 API Reference - Bom Contato
 
 ## Base URL
 ```

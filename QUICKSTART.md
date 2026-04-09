@@ -1,4 +1,4 @@
-# Quick Start - ShoppingHub
+# Quick Start - Bom Contato
 
 ## Inicio rapido
 

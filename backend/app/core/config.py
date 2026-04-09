@@ -29,9 +29,9 @@ class Settings(BaseSettings):
 
     # Server
     debug: bool = False
-    api_title: str = "Shopping Platform API"
+    api_title: str = "Bom Contato API"
     api_version: str = "1.0.0"
-    api_description: str = "Platform de shopping online com micro sites para anunciantes"
+    api_description: str = "Plataforma Bom Contato com micro sites para anunciantes"
     upload_dir: str = str(BASE_DIR / "uploads")
 
     # Email / job applications
@@ -40,7 +40,7 @@ class Settings(BaseSettings):
     smtp_username: str = ""
     smtp_password: str = ""
     smtp_from_email: str = ""
-    smtp_from_name: str = "ShoppingHub"
+    smtp_from_name: str = "Bom Contato"
     smtp_use_tls: bool = True
     smtp_use_ssl: bool = False
     job_application_max_resume_size_mb: int = 5
