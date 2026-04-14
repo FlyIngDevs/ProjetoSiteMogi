@@ -34,7 +34,8 @@ async function loadBranding() {
             logoElement.onerror = function() {
                 console.error('[LOGO] Falha ao carregar imagem. Retornando ao padrão.');
                 console.error('[LOGO] URL tentada:', branding.brand_logo_url);
-                this.src = 'img/bomcontato-logo.png';
+                const PLACEHOLDER_SVG_LOGO = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="60"%3E%3Crect fill="%23f5f5f5" width="100%" height="100%"/%3E%3Ctext x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="14" fill="%23666"%3EBom Contato%3C/text%3E%3C/svg%3E';
+                this.src = PLACEHOLDER_SVG_LOGO;
                 this.onerror = null; // Previne loop infinito
             };
             
