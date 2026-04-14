@@ -4,14 +4,8 @@ function resolveShoppingHubApiBase() {
         return explicitBase.replace(/\/$/, '');
     }
 
-    const { origin, hostname, port } = window.location;
-    const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
-
-    if (isLocalhost && port && port !== '8000') {
-        return 'http://127.0.0.1:8000/api';
-    }
-
-    return `${origin}/api`;
+    // Always use relative path - this works in both dev and production
+    return '/api';
 }
 
 function resolveAssetUrl(explicitValue, fallbackValue) {

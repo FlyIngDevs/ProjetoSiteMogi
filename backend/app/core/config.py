@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     )
 
     # Database
-    database_url: str = "sqlite:///./shopping.db"
+    database_url: str = ""  # Force production to use DATABASE_URL env var
 
     # Security
     secret_key: str = "dev-secret-key-change-in-production"
@@ -62,6 +62,8 @@ class Settings(BaseSettings):
         "http://127.0.0.1:3000",
         "http://127.0.0.1:8080",
         "http://127.0.0.1:8000",
+        "https://www.bomcontato.com.br",
+        "https://bomcontato.com.br",
     ])
 
     @field_validator("allowed_origins", mode="before")
