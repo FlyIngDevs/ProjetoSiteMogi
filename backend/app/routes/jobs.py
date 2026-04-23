@@ -189,7 +189,6 @@ async def apply_to_job(
         "sent_to": recipient_email,
     }
 
-
 @router.put("/{job_id}", response_model=JobResponse)
 async def update_job(
     job_id: int,
@@ -206,6 +205,12 @@ async def update_job(
         )
     
     update_data = job_update.dict(exclude_unset=True)
+    
+    # Don't update company_id if it's empty/null/invalid
+    if 'company_id' in update_data:
+        if not update_data['company_id'] or update_data['company_id'] <= 0:
+            del update_data['company_id']
+    
     for field, value in update_data.items():
         setattr(db_job, field, value)
     

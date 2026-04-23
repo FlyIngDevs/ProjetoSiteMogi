@@ -30,12 +30,20 @@ def is_storage_configured() -> bool:
 
 def _build_public_url(object_key: str) -> str:
     """
-    Build a signed URL for the S3 object (valid for 1 hour).
-    This allows access even if bucket is private, using temporary credentials.
+    Build a public URL for the S3 object using the public base URL.
+    This ensures URLs are persistent and don't expire.
     """
     if not is_storage_configured():
         raise StorageConfigurationError("Storage bucket is not configured.")
     
+    # Use public base URL if configured (preferred - persistent URLs)
+    public_base = settings.storage_public_base_url.strip().rstrip("/")
+    if public_base:
+        url = f"{public_base}/{object_key}"
+        logger.info("Generated public URL for: %s", object_key)
+        return url
+    
+    # Fallback to signed URL only if public base URL is not configured
     config = Config(
         connect_timeout=30,
         read_timeout=30,
@@ -52,7 +60,7 @@ def _build_public_url(object_key: str) -> str:
     )
 
     try:
-        # Generate a signed URL valid for 1 hour (3600 seconds)
+        # Generate a signed URL as fallback (valid for 1 hour)
         signed_url = client.generate_presigned_url(
             'get_object',
             Params={
@@ -61,16 +69,11 @@ def _build_public_url(object_key: str) -> str:
             },
             ExpiresIn=3600,  # 1 hour
         )
-        logger.info("Generated signed URL for: %s", object_key)
+        logger.info("Generated signed URL for: %s (fallback)", object_key)
         return signed_url
     except (BotoCoreError, ClientError) as exc:
         logger.error("Failed to generate signed URL: %s - %s", object_key, str(exc))
-        # Fallback to public URL if signing fails
-        public_base = settings.storage_public_base_url.strip().rstrip("/")
-        if public_base:
-            return f"{public_base}/{object_key}"
         raise StorageConfigurationError("Could not generate URL and public_base_url is not configured.") from exc
-
 
 def upload_bytes(
     contents: bytes,
