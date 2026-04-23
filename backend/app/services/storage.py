@@ -31,18 +31,14 @@ def is_storage_configured() -> bool:
 def get_image_url(object_key: str) -> str:
     """
     Generate a URL for an image.
-    First tries a signed URL, then falls back to direct public URL or proxy endpoint.
+    Priority:
+    1. Signed URL from S3 (secure, temporary)
+    2. Proxy endpoint (always works, uses backend credentials)
     """
     if not is_storage_configured():
         raise StorageConfigurationError("Storage bucket is not configured.")
     
-    # Opção 1: Se houver uma URL base pública configurada, use-a
-    if settings.storage_public_base_url:
-        public_url = f"{settings.storage_public_base_url.rstrip('/')}/{object_key}"
-        logger.info("Using public URL for: %s -> %s", object_key, public_url)
-        return public_url
-    
-    # Opção 2: Tente gerar signed URL
+    # Opção 1: Tente gerar signed URL (mais seguro)
     try:
         config = Config(
             connect_timeout=30,
@@ -71,11 +67,11 @@ def get_image_url(object_key: str) -> str:
         logger.info("Generated fresh signed URL for: %s", object_key)
         return signed_url
     except (BotoCoreError, ClientError) as exc:
-        logger.warning("Failed to generate signed URL for %s: %s", object_key, str(exc))
+        logger.debug("Failed to generate signed URL for %s: %s", object_key, str(exc))
     
-    # Opção 3: Usar endpoint proxy do backend para servir a imagem
+    # Opção 2: Usar endpoint proxy do backend (garantido funcionar)
     from urllib.parse import quote
-    proxy_url = f"/api/admin/image-proxy/{quote(object_key, safe='')}"
+    proxy_url = f"/api/image-proxy/{quote(object_key, safe='')}"
     logger.info("Using proxy URL for: %s -> %s", object_key, proxy_url)
     return proxy_url
 
