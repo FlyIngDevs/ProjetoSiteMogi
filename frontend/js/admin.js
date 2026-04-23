@@ -39,6 +39,12 @@ async function fetchJson(url, options = {}) {
     }
 
     if (!response.ok) {
+        // Se receber 401, faz logout automático (token expirou ou foi invalidado)
+        if (response.status === 401) {
+            console.warn('Token inválido ou expirado - fazendo logout automático');
+            logout();
+            throw new Error('Sua sessão expirou. Por favor, faça login novamente.');
+        }
         throw new Error(payload?.detail || 'Falha na requisicao');
     }
 
@@ -89,22 +95,11 @@ async function uploadAdminImage(file, folder, targetInputId, messageId) {
     setMessage(messageId, 'Enviando imagem...');
 
     try {
-        const response = await fetch(`${API_BASE}/admin/upload-image?folder=${encodeURIComponent(folder)}`, {
+        const payload = await fetchJson(`${API_BASE}/admin/upload-image?folder=${encodeURIComponent(folder)}`, {
             method: 'POST',
             headers: authHeaders(false),
             body: formData
         });
-
-        let payload = null;
-        try {
-            payload = await response.json();
-        } catch {
-            payload = null;
-        }
-
-        if (!response.ok) {
-            throw new Error(payload?.detail || 'Falha ao enviar imagem');
-        }
 
         const targetInput = document.getElementById(targetInputId);
         if (targetInput) {

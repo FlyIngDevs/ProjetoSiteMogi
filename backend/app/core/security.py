@@ -66,11 +66,25 @@ async def get_current_user(
         user_id: str = payload.get("sub")
         if user_id is None:
             raise credential_exception
-    except JWTError:
+    except JWTError as e:
+        # Log the specific JWT error for debugging
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.warning(f"JWT decode error: {type(e).__name__}: {str(e)}")
         raise credential_exception
 
     user = db.query(User).filter(User.id == int(user_id)).first()
-    if user is None or not user.is_active:
+    if user is None:
+        # Log if user was deleted
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.warning(f"User {user_id} not found in database")
+        raise credential_exception
+    
+    if not user.is_active:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.warning(f"User {user_id} ({user.email}) is inactive")
         raise credential_exception
 
     return user
