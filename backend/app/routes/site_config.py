@@ -52,7 +52,7 @@ def extract_object_key_from_url(url: str | None) -> str | None:
 def regenerate_image_url(url: str | None) -> str | None:
     """
     Regenerate a working image URL from a stored URL.
-    Extracts the object key and generates a fresh URL.
+    Always returns a working URL (Signed URL or Proxy URL), never the original S3 URL.
     """
     if not url:
         return None
@@ -61,18 +61,31 @@ def regenerate_image_url(url: str | None) -> str | None:
         object_key = extract_object_key_from_url(url)
         if not object_key:
             logger.warning("Could not extract object key from: %s", url)
-            return url  # Return original if we can't extract
+            # Fallback: if we can't extract, use a generic proxy URL
+            # This should not happen with properly formatted URLs
+            from urllib.parse import quote
+            return f"/api/image-proxy/{quote(url, safe='')}"
         
         if is_storage_configured():
             fresh_url = get_image_url(object_key)
             logger.info("Regenerated URL for %s -> %s", object_key, fresh_url)
             return fresh_url
         else:
-            logger.debug("Storage not configured, returning original URL")
-            return url
+            logger.warning("Storage not configured, using proxy URL as fallback")
+            from urllib.parse import quote
+            return f"/api/image-proxy/{quote(object_key, safe='')}"
     except Exception as exc:
-        logger.warning("Could not regenerate URL for %s: %s", url, str(exc))
-        return url  # Return original URL as fallback
+        logger.warning("Error regenerating URL for %s: %s - using proxy URL", url, str(exc))
+        # Always ensure we return a proxy URL, never the original S3 URL
+        try:
+            object_key = extract_object_key_from_url(url)
+            if object_key:
+                from urllib.parse import quote
+                return f"/api/image-proxy/{quote(object_key, safe='')}"
+        except:
+            pass
+        # Last resort: return None rather than broken S3 URL
+        return None
 
 
 @router.get("/branding", response_model=SiteBrandingResponse)

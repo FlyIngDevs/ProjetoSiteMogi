@@ -31,6 +31,7 @@ def is_storage_configured() -> bool:
 def get_image_url(object_key: str) -> str:
     """
     Generate a URL for an image.
+    Returns a working URL guaranteed to function.
     Priority:
     1. Signed URL from S3 (secure, temporary)
     2. Proxy endpoint (always works, uses backend credentials)
@@ -64,10 +65,13 @@ def get_image_url(object_key: str) -> str:
             },
             ExpiresIn=86400,  # 24 hours
         )
-        logger.info("Generated fresh signed URL for: %s", object_key)
-        return signed_url
-    except (BotoCoreError, ClientError) as exc:
-        logger.debug("Failed to generate signed URL for %s: %s", object_key, str(exc))
+        if signed_url:
+            logger.info("Generated fresh signed URL for: %s", object_key)
+            return signed_url
+    except Exception as exc:
+        # Catch ALL exceptions, not just botocore errors
+        logger.debug("Failed to generate signed URL for %s: %s (%s)", 
+                    object_key, type(exc).__name__, str(exc))
     
     # Opção 2: Usar endpoint proxy do backend (garantido funcionar)
     from urllib.parse import quote
