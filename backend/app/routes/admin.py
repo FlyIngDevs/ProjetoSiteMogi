@@ -113,6 +113,19 @@ async def admin_upload_image(
         "storage": "local",
     }
 
+@router.get("/image-url/{object_key:path}")
+async def get_image_url_endpoint(object_key: str):
+    """Get a fresh signed URL for an image."""
+    try:
+        from app.services.storage import get_image_url
+        url = get_image_url(object_key)
+        return {"url": url}
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(exc)
+        )
+
 
 @router.get("/branding", response_model=SiteBrandingResponse)
 async def admin_get_branding(db: Session = Depends(get_db)):
