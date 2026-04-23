@@ -30,28 +30,35 @@ def is_storage_configured() -> bool:
 
 def get_image_url(object_key: str) -> str:
     """
-    Generate a fresh signed URL for an image on-demand.
-    This ensures URLs are always valid and never expire.
+    Generate a URL for an image.
+    First tries a signed URL, then falls back to direct public URL or proxy endpoint.
     """
     if not is_storage_configured():
         raise StorageConfigurationError("Storage bucket is not configured.")
     
-    config = Config(
-        connect_timeout=30,
-        read_timeout=30,
-        retries={"max_attempts": 3, "mode": "adaptive"},
-    )
-
-    client = boto3.client(
-        "s3",
-        endpoint_url=settings.storage_endpoint_url,
-        aws_access_key_id=settings.storage_access_key_id,
-        aws_secret_access_key=settings.storage_secret_access_key,
-        region_name=settings.storage_region or None,
-        config=config,
-    )
-
+    # Opção 1: Se houver uma URL base pública configurada, use-a
+    if settings.storage_public_base_url:
+        public_url = f"{settings.storage_public_base_url.rstrip('/')}/{object_key}"
+        logger.info("Using public URL for: %s -> %s", object_key, public_url)
+        return public_url
+    
+    # Opção 2: Tente gerar signed URL
     try:
+        config = Config(
+            connect_timeout=30,
+            read_timeout=30,
+            retries={"max_attempts": 3, "mode": "adaptive"},
+        )
+
+        client = boto3.client(
+            "s3",
+            endpoint_url=settings.storage_endpoint_url,
+            aws_access_key_id=settings.storage_access_key_id,
+            aws_secret_access_key=settings.storage_secret_access_key,
+            region_name=settings.storage_region or None,
+            config=config,
+        )
+
         # Generate a signed URL valid for 24 hours
         signed_url = client.generate_presigned_url(
             'get_object',
@@ -64,8 +71,13 @@ def get_image_url(object_key: str) -> str:
         logger.info("Generated fresh signed URL for: %s", object_key)
         return signed_url
     except (BotoCoreError, ClientError) as exc:
-        logger.error("Failed to generate signed URL: %s - %s", object_key, str(exc))
-        raise StorageConfigurationError("Could not generate URL for image.") from exc
+        logger.warning("Failed to generate signed URL for %s: %s", object_key, str(exc))
+    
+    # Opção 3: Usar endpoint proxy do backend para servir a imagem
+    from urllib.parse import quote
+    proxy_url = f"/api/admin/image-proxy/{quote(object_key, safe='')}"
+    logger.info("Using proxy URL for: %s -> %s", object_key, proxy_url)
+    return proxy_url
 
 
 def upload_bytes(
