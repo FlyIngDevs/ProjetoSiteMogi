@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Dict, Optional
 from uuid import uuid4
 import logging
 import time
@@ -80,7 +81,7 @@ def get_image_url(object_key: str) -> str:
     return proxy_url
 
 
-ef upload_bytes(
+def upload_bytes(
     contents: bytes,
     original_filename: str,
     folder: str,
