@@ -80,21 +80,27 @@ async def admin_upload_image(
             detail="Empty file"
         )
 
-    if is_storage_configured():
-        try:
-            uploaded = upload_bytes(contents, file.filename, folder, file.content_type)
-        except StorageConfigurationError as exc:
-            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)) from exc
-        except RuntimeError as exc:
-            raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc)) from exc
+    # S3 é OBRIGATÓRIO - sem fallback local
+    try:
+        uploaded = upload_bytes(contents, file.filename, folder, file.content_type)
+    except StorageConfigurationError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Storage not configured: {str(exc)}"
+        ) from exc
+    except RuntimeError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"Upload failed: {str(exc)}"
+        ) from exc
 
-        return {
-            "filename": uploaded["filename"],
-            "path": uploaded["key"],
-            "url": uploaded["url"],
-            "uploaded_by": current_admin.email,
-            "storage": "bucket",
-        }
+    return {
+        "filename": uploaded["filename"],
+        "path": uploaded["key"],
+        "url": uploaded["url"],
+        "uploaded_by": current_admin.email,
+        "storage": "s3",  # Sempre S3
+    }
 
     target_dir = UPLOADS_ROOT / folder
     target_dir.mkdir(parents=True, exist_ok=True)

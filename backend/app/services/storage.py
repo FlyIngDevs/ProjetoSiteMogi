@@ -80,20 +80,31 @@ def get_image_url(object_key: str) -> str:
     return proxy_url
 
 
-def upload_bytes(
+ef upload_bytes(
     contents: bytes,
     original_filename: str,
     folder: str,
     content_type: str | None = None,
 ) -> dict[str, str]:
     if not is_storage_configured():
-        raise StorageConfigurationError("Storage bucket is not configured.")
+        missing = []
+        if not settings.storage_endpoint_url:
+            missing.append("STORAGE_ENDPOINT_URL")
+        if not settings.storage_bucket_name:
+            missing.append("STORAGE_BUCKET_NAME")
+        if not settings.storage_access_key_id:
+            missing.append("STORAGE_ACCESS_KEY_ID")
+        if not settings.storage_secret_access_key:
+            missing.append("STORAGE_SECRET_ACCESS_KEY")
+        
+        raise StorageConfigurationError(
+            f"Storage bucket not configured. Missing: {', '.join(missing)}"
+        )
 
     extension = Path(original_filename).suffix.lower()
     filename = f"{uuid4().hex}{extension}"
     object_key = f"{folder}/{filename}"
 
-    # Configure boto3 with timeout and retries to avoid hanging requests.
     config = Config(
         connect_timeout=30,
         read_timeout=30,
@@ -134,5 +145,5 @@ def upload_bytes(
     return {
         "filename": filename,
         "key": object_key,
-        "url": get_image_url(object_key),  # Generate fresh signed URL
+        "url": get_image_url(object_key),
     }
