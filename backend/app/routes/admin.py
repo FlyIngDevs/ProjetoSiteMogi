@@ -102,23 +102,6 @@ async def admin_upload_image(
         "storage": "s3",  # Sempre S3
     }
 
-    target_dir = UPLOADS_ROOT / folder
-    target_dir.mkdir(parents=True, exist_ok=True)
-
-    filename = f"{uuid4().hex}{extension}"
-    target_path = target_dir / filename
-    target_path.write_bytes(contents)
-    public_path = f"/uploads/{folder}/{filename}"
-    public_url = str(request.base_url).rstrip("/") + public_path
-
-    return {
-        "filename": filename,
-        "path": public_path,
-        "url": public_url,
-        "uploaded_by": current_admin.email,
-        "storage": "local",
-    }
-
 @router.get("/image-url/{object_key:path}")
 async def get_image_url_endpoint(object_key: str):
     """Get a fresh signed URL for an image."""
