@@ -164,7 +164,7 @@ body {
 .carousel-container {
     position: relative;
     width: 100%;
-    height: 400px;
+    height: 440px;
     overflow: hidden;
     border-radius: 15px;
     box-shadow: var(--shadow-heavy);
@@ -1018,7 +1018,7 @@ body {
     }
 
     .carousel-container {
-        height: 250px;
+        height: 280px;
     }
 
     .carousel-caption h2 {
