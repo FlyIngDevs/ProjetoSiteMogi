@@ -1022,12 +1022,26 @@ body {
         height: 280px;
     }
 
+    .carousel-item img {
+        object-fit: contain;
+        background: #333;
+    }
+
+    .carousel-caption {
+        padding: 2rem 1.5rem 1.5rem;
+    }
+
     .carousel-caption h2 {
         font-size: 1.5rem;
     }
 
     .carousel-caption p {
         font-size: 0.9rem;
+    }
+
+    .carousel-btn {
+        padding: 0.8rem;
+        font-size: 1.3rem;
     }
 
     .section-title {
@@ -1096,8 +1110,40 @@ body {
         padding: 1.5rem;
     }
 
-    .carousel-btn {
-        padding: 0.75rem;
+    .carousel-container {
+        height: 200px;
+    }
+
+    .carousel-item img {
+        object-fit: contain;
+        background: #333;
+    }
+
+    .carousel-caption {
+        padding: 1.5rem 1rem 1rem;
+    }
+
+    .carousel-caption h2 {
         font-size: 1.2rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .carousel-caption p {
+        font-size: 0.8rem;
+        display: none;
+    }
+
+    .carousel-btn {
+        padding: 0.6rem;
+        font-size: 1.2rem;
+    }
+
+    .dot {
+        width: 8px;
+        height: 8px;
+    }
+
+    .dot.active {
+        width: 20px;
     }
 }
