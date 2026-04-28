@@ -1,4 +1,5 @@
 from pathlib import Path
+from urllib.parse import quote
 from uuid import uuid4
 import logging
 import time
@@ -18,66 +19,56 @@ class StorageConfigurationError(RuntimeError):
 
 
 def is_storage_configured() -> bool:
-    return all(
-        [
-            settings.storage_endpoint_url,
-            settings.storage_bucket_name,
-            settings.storage_access_key_id,
-            settings.storage_secret_access_key,
-        ]
-    )
+    """Check if all required storage configuration is present."""
+    return all([
+        settings.storage_endpoint_url,
+        settings.storage_bucket_name,
+        settings.storage_access_key_id,
+        settings.storage_secret_access_key,
+    ])
 
 
 def get_image_url(object_key: str) -> str:
     """
-    Generate a URL for an image.
-    Returns a working URL guaranteed to function.
-    Priority:
-    1. Signed URL from S3 (secure, temporary)
-    2. Proxy endpoint (always works, uses backend credentials)
+    Generate a permanent URL for an image using proxy endpoint.
+    
+    The proxy endpoint uses backend credentials to access S3,
+    so the URL never expires (unlike signed URLs which expire after 24h).
+    
+    Args:
+        object_key: The S3 object key (e.g., "carousel/abc123.jpg")
+    
+    Returns:
+        A permanent proxy URL that never expires
+    
+    Raises:
+        StorageConfigurationError: If storage is not configured
     """
     if not is_storage_configured():
         raise StorageConfigurationError("Storage bucket is not configured.")
     
-    # Opção 1: Tente gerar signed URL (mais seguro)
-    try:
-        config = Config(
-            connect_timeout=30,
-            read_timeout=30,
-            retries={"max_attempts": 3, "mode": "adaptive"},
-        )
-
-        client = boto3.client(
-            "s3",
-            endpoint_url=settings.storage_endpoint_url,
-            aws_access_key_id=settings.storage_access_key_id,
-            aws_secret_access_key=settings.storage_secret_access_key,
-            region_name=settings.storage_region or None,
-            config=config,
-        )
-
-        # Generate a signed URL valid for 24 hours
-        signed_url = client.generate_presigned_url(
-            'get_object',
-            Params={
-                'Bucket': settings.storage_bucket_name,
-                'Key': object_key
-            },
-            ExpiresIn=86400,  # 24 hours
-        )
-        if signed_url:
-            logger.info("Generated fresh signed URL for: %s", object_key)
-            return signed_url
-    except Exception as exc:
-        # Catch ALL exceptions, not just botocore errors
-        logger.debug("Failed to generate signed URL for %s: %s (%s)", 
-                    object_key, type(exc).__name__, str(exc))
-    
-    # Opção 2: Usar endpoint proxy do backend (garantido funcionar)
-    from urllib.parse import quote
+    # Always use proxy endpoint - never expires
     proxy_url = f"/api/image-proxy/{quote(object_key, safe='')}"
-    logger.info("Using proxy URL for: %s -> %s", object_key, proxy_url)
+    logger.info("Generated permanent proxy URL for: %s", object_key)
     return proxy_url
+
+
+def _create_s3_client() -> boto3.client:
+    """Create and configure an S3 client with retry logic."""
+    config = Config(
+        connect_timeout=30,
+        read_timeout=30,
+        retries={"max_attempts": 3, "mode": "adaptive"},
+    )
+    
+    return boto3.client(
+        "s3",
+        endpoint_url=settings.storage_endpoint_url,
+        aws_access_key_id=settings.storage_access_key_id,
+        aws_secret_access_key=settings.storage_secret_access_key,
+        region_name=settings.storage_region or None,
+        config=config,
+    )
 
 
 def upload_bytes(
@@ -86,6 +77,23 @@ def upload_bytes(
     folder: str,
     content_type: str | None = None,
 ) -> dict[str, str]:
+    """
+    Upload file bytes to S3 storage.
+    
+    Args:
+        contents: File contents as bytes
+        original_filename: Original filename (used to extract extension)
+        folder: S3 folder/prefix (e.g., "carousel", "annotators")
+        content_type: MIME type (auto-detected if not provided)
+    
+    Returns:
+        Dictionary with filename, key, and permanent URL
+    
+    Raises:
+        StorageConfigurationError: If storage is not configured
+        RuntimeError: If upload fails
+    """
+    # Validate storage configuration
     if not is_storage_configured():
         missing = []
         if not settings.storage_endpoint_url:
@@ -100,48 +108,37 @@ def upload_bytes(
         raise StorageConfigurationError(
             f"Storage bucket not configured. Missing: {', '.join(missing)}"
         )
-
+    
+    # Generate unique filename
     extension = Path(original_filename).suffix.lower()
     filename = f"{uuid4().hex}{extension}"
     object_key = f"{folder}/{filename}"
-
-    config = Config(
-        connect_timeout=30,
-        read_timeout=30,
-        retries={"max_attempts": 3, "mode": "adaptive"},
-    )
-
-    client = boto3.client(
-        "s3",
-        endpoint_url=settings.storage_endpoint_url,
-        aws_access_key_id=settings.storage_access_key_id,
-        aws_secret_access_key=settings.storage_secret_access_key,
-        region_name=settings.storage_region or None,
-        config=config,
-    )
-
-    extra_args = {}
-    if content_type:
-        extra_args["ContentType"] = content_type
-    else:
-        extra_args["ContentType"] = "application/octet-stream"
-
+    
+    # Prepare upload arguments
+    extra_args = {
+        "ContentType": content_type or "application/octet-stream"
+    }
+    
     logger.info("Starting upload: %s (%s bytes)", object_key, len(contents))
     start_time = time.time()
-
+    
     try:
+        # Upload to S3
+        client = _create_s3_client()
         client.put_object(
             Bucket=settings.storage_bucket_name,
             Key=object_key,
             Body=contents,
             **extra_args,
         )
+        
         elapsed = time.time() - start_time
         logger.info("Upload successful: %s (%.2fs)", object_key, elapsed)
+        
     except (BotoCoreError, ClientError) as exc:
         logger.error("Upload failed: %s - %s", object_key, str(exc))
         raise RuntimeError("Could not upload file to storage bucket.") from exc
-
+    
     return {
         "filename": filename,
         "key": object_key,
